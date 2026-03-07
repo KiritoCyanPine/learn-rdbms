@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn SQL and relational databases with hands-on interactive exercises">
+    <title>SQL Learning Platform - Interactive Database Tutorials</title>
+    
+    <!-- Ubuntu Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Ubuntu+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Learn RDBMS</h1>
+                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">
+                    <span class="toggle-icon"></span>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav" id="sidebarNav">
+                <!-- Navigation will be dynamically populated -->
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="progress-indicator">
+                    <span id="progressText">0% Complete</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="content-container">
+                <!-- Module Header -->
+                <header class="module-header" id="moduleHeader">
+                    <h2 class="module-title" id="moduleTitle">Welcome to SQL Learning Platform</h2>
+                    <p class="module-description" id="moduleDescription">
+                        Master SQL through interactive exercises with real-time query execution
+                    </p>
+                </header>
+
+                <!-- Exercise List -->
+                <div class="exercises-container" id="exercisesContainer">
+                    <!-- Exercises will be dynamically populated -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- SQL Query Modal -->
+    <div class="modal" id="queryModal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-overlay" id="modalOverlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">SQL Playground</h3>
+                <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="query-editor">
+                    <label for="queryInput" class="visually-hidden">SQL Query Input</label>
+                    <textarea 
+                        id="queryInput" 
+                        class="query-input" 
+                        placeholder="SELECT * FROM books;"
+                        spellcheck="false"
+                        autocomplete="off"
+                        autocorrect="off"
+                        autocapitalize="off"
+                    ></textarea>
+                </div>
+                <div class="query-actions">
+                    <button class="btn btn-primary" id="runQueryBtn">
+                        <span class="btn-icon">▶</span>
+                        Run Query
+                    </button>
+                    <button class="btn btn-secondary" id="clearQueryBtn">Clear</button>
+                    <button class="btn btn-secondary" id="resetDbBtn">Reset Database</button>
+                </div>
+                <div class="query-results" id="queryResults">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

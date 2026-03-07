@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn SQL and relational databases with hands-on exercises">
+    <title>SQL Learning Platform</title>
+    
+    <!-- Ubuntu Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- SQL.js Library -->
+    <script src="https://sql.js.org/dist/sql-wasm.js"></script>
+    
+    <style>
+        /* ==================== CSS RESET ==================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* ==================== DESIGN TOKENS ==================== */
+        :root {
+            /* Colors - Indigo Palette (2-3 colors max) */
+            --color-primary: #4f46e5;      /* Indigo 600 */
+            --color-primary-dark: #3730a3; /* Indigo 800 */
+            
+            /* Neutrals */
+            --color-bg: #fafafa;
+            --color-bg-elevated: #ffffff;
+            --color-bg-subtle: #f3f4f6;
+            --color-text: #1f2937;
+            --color-text-secondary: #4b5563;
+            --color-text-muted: #6b7280;
+            --color-border: #e5e7eb;
+            
+            /* Typography Scale (Perfect Fourth 1.333) */
+            --font-size-xs: 0.75rem;    /* 13.5px */
+            --font-size-sm: 0.875rem;   /* 15.75px */
+            --font-size-base: 1rem;     /* 18px */
+            --font-size-md: 1.125rem;   /* 20.25px */
+            --font-size-lg: 1.333rem;   /* 24px */
+            --font-size-xl: 1.777rem;   /* 32px */
+            --font-size-2xl: 2.369rem;  /* 42.6px */
+            
+            /* Line Heights */
+            --line-height-tight: 1.2;
+            --line-height-snug: 1.375;
+            --line-height-normal: 1.6;
+            --line-height-relaxed: 1.75;
+            
+            /* Font Weights */
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-bold: 700;
+            
+            /* Spacing Scale */
+            --space-xs: 0.5rem;
+            --space-sm: 1rem;
+            --space-md: 1.5rem;
+            --space-lg: 2rem;
+            --space-xl: 3rem;
+        }
+        
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            :root {
+                --font-size-base: 1rem;    /* 16px on mobile */
+                --font-size-lg: 1.25rem;   /* 20px */
+                --font-size-xl: 1.563rem;  /* 25px */
+                --font-size-2xl: 1.953rem; /* 31px */
+            }
+        }
+        
+        /* ==================== BASE STYLES ==================== */
+        html {
+            font-size: 18px;
+        }
+        
+        body {
+            font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            color: var(--color-text);
+            background: var(--color-bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* ==================== TYPOGRAPHY ==================== */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: var(--font-weight-bold);
+            line-height: var(--line-height-tight);
+            margin-top: 0;
+        }
+        
+        h1 {
+            font-size: var(--font-size-2xl);
+            margin-bottom: var(--space-sm);
+            letter-spacing: -0.02em;
+        }
+        
+        h2 {
+            font-size: var(--font-size-xl);
+            line-height: 1.25;
+            margin-top: 2.5rem;
+            margin-bottom: var(--space-sm);
+            color: var(--color-primary-dark);
+        }
+        
+        h3 {
+            font-size: var(--font-size-lg);
+            line-height: 1.3;
+            margin-top: var(--space-lg);
+            margin-bottom: 0.75rem;
+        }
+        
+        h4 {
+            font-size: var(--font-size-md);
+            margin-top: var(--space-md);
+            margin-bottom: 0.5rem;
+            font-weight: var(--font-weight-medium);
+        }
+        
+        p {
+            margin-bottom: 1.25rem;
+            max-width: 70ch;
+        }
+        
+        strong, b {
+            font-weight: var(--font-weight-bold);
+        }
+        
+        a {
+            color: var(--color-primary);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease;
+        }
+        
+        a:hover {
+            border-bottom-color: var(--color-primary);
+        }
+        
+        a:focus {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+        
+        /* Code */
+        code, pre {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Courier New', monospace;
+        }
+        
+        code {
+            font-size: 0.875em;
+            padding: 0.125rem 0.375rem;
+            background: rgba(79, 70, 229, 0.08);
+            color: var(--color-primary-dark);
+            border-radius: 3px;
+            font-weight: var(--font-weight-medium);
+        }
+        
+        pre {
+            font-size: 0.875rem;
+            line-height: 1.6;
+            padding: 1rem;
+            margin: var(--space-md) 0;
+            overflow-x: auto;
+            border-radius: 6px;
+            background: var(--color-bg-subtle);
+            border: 1px solid var(--color-border);
+        }
+        
+        pre code {
+            padding: 0;
+            background: none;
+            font-weight: var(--font-weight-normal);
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin-bottom: 1.25rem;
+            padding-left: var(--space-md);
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* ==================== LAYOUT ==================== */
+        .page-container {
+            display: grid;
+            grid-template-columns: 16rem 1fr;
+            gap: var(--space-xl);
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+        }
+        
+        .main-content {
+            min-width: 0;
+            max-width: 70ch;
+        }
+        
+        @media (max-width: 1024px) {
+            .page-container {
+                grid-template-columns: 12rem 1fr;
+                gap: var(--space-lg);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .page-container {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+                padding: var(--space-sm);
+            }
+            
+            .sidebar {
+                position: static !important;
+                width: auto !important;
+            }
+        }
+        
+        /* ==================== SIDEBAR NAVIGATION ==================== */
+        .sidebar {
+            position: sticky;
+            top: var(--space-lg);
+            height: fit-content;
+        }
+        
+        .sidebar-title {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-list li {
+            margin-bottom: 0.25rem;
+        }
+        
+        .nav-list a {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+            border-radius: 4px;
+            border-left: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-list a:hover {
+            background: var(--color-bg-subtle);
+            color: var(--color-text);
+            border-bottom: none;
+        }
+        
+        .nav-list a.active {
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--color-primary);
+            border-left-color: var(--color-primary);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        /* ==================== EXERCISE CARD ==================== */
+        .exercise-card {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .exercise-number {
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary);
+            font-size: var(--font-size-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .exercise-difficulty {
+            font-size: var(--font-size-xs);
+            padding: 0.25rem 0.75rem;
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--color-primary-dark);
+            border-radius: 12px;
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .solution {
+            margin-top: var(--space-sm);
+            padding-top: var(--space-sm);
+            border-top: 1px solid var(--color-border);
+        }
+        
+        .solution summary {
+            cursor: pointer;
+            color: var(--color-primary);
+            font-weight: var(--font-weight-medium);
+            user-select: none;
+            padding: 0.5rem 0;
+            list-style: none;
+        }
+        
+        .solution summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        .solution summary:hover {
+            color: var(--color-primary-dark);
+        }
+        
+        .solution summary::before {
+            content: '▶ ';
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        
+        .solution[open] summary::before {
+            transform: rotate(90deg);
+        }
+        
+        /* ==================== CALLOUT ==================== */
+        .callout {
+            display: flex;
+            gap: var(--space-sm);
+            padding: var(--space-sm);
+            margin: var(--space-md) 0;
+            border-radius: 6px;
+            border-left: 3px solid var(--color-primary);
+            background: rgba(79, 70, 229, 0.05);
+        }
+        
+        .callout-icon {
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+        
+        .callout-content {
+            flex: 1;
+            font-size: var(--font-size-sm);
+        }
+        
+        .callout-content strong {
+            color: var(--color-primary-dark);
+        }
+        
+        /* ==================== SECTION HEADER ==================== */
+        .section-header {
+            margin-bottom: var(--space-md);
+        }
+        
+        .section-meta {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-muted);
+            margin-top: 0.5rem;
+        }
+        
+        /* ==================== SQL QUERY RUNNER ==================== */
+        .sql-playground {
+            background: var(--color-bg-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: var(--space-md);
+            margin: var(--space-lg) 0;
+        }
+        
+        .sql-playground-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .sql-playground-title {
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary-dark);
+        }
+        
+        .sql-editor {
+            position: relative;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .sql-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: var(--color-text);
+            background: var(--color-bg-subtle);
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        
+        .sql-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .sql-controls {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .btn {
+            padding: 0.625rem 1.25rem;
+            font-family: 'Ubuntu', sans-serif;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(79, 70, 229, 0.2);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: var(--color-bg-subtle);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--color-bg);
+            border-color: var(--color-primary);
+        }
+        
+        .sql-results {
+            margin-top: var(--space-md);
+        }
+        
+        .results-header {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .results-table-container {
+            overflow-x: auto;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            background: white;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--font-size-sm);
+        }
+        
+        .results-table th {
+            background: var(--color-bg-subtle);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: var(--font-weight-bold);
+            color: var(--color-primary-dark);
+            border-bottom: 2px solid var(--color-border);
+        }
+        
+        .results-table td {
+            padding: 0.625rem 1rem;
+            border-bottom: 1px solid var(--color-border);
+            color: var(--color-text);
+        }
+        
+        .results-table tbody tr:hover {
+            background: rgba(79, 70, 229, 0.03);
+        }
+        
+        .results-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .error-message {
+            padding: 1rem;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            border-radius: 6px;
+            color: #991b1b;
+            font-size: var(--font-size-sm);
+        }
+        
+        .success-message {
+            padding: 1rem;
+            background: #d1fae5;
+            border: 1px solid #6ee7b7;
+            border-radius: 6px;
+            color: #065f46;
+            font-size: var(--font-size-sm);
+        }
+        
+        .empty-state {
+            padding: 2rem;
+            text-align: center;
+            color: var(--color-text-muted);
+            font-size: var(--font-size-sm);
+        }
+    </style>
+</head>
+<body>
+    <!-- Page Container -->
+    <div class="page-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav>
+                <h3 class="sidebar-title">Contents</h3>
+                <ul class="nav-list">
+                    <li><a href="#introduction" class="active">Introduction</a></li>
+                    <li><a href="#playground">SQL Playground</a></li>
+                    <li><a href="#basics">SQL Basics</a></li>
+                    <li><a href="#exercises">Exercises</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <article>
+                <!-- Page Header -->
+                <header class="section-header">
+                    <h1>SQL Learning Platform</h1>
+                    <p class="section-meta">Learn relational databases with hands-on exercises</p>
+                </header>
+                
+                <!-- Introduction Section -->
+                <section id="introduction">
+                    <h2>Introduction</h2>
+                    <p>
+                        Welcome to the SQL learning platform. This guide will help you master 
+                        relational databases through practical exercises and clear explanations.
+                    </p>
+                    
+                    <div class="callout">
+                        <div class="callout-icon">💡</div>
+                        <div class="callout-content">
+                            <strong>Tip:</strong> Work through each section sequentially for 
+                            the best learning experience.
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- SQL Playground Section -->
+                <section id="playground">
+                    <h2>SQL Playground</h2>
+                    <p>
+                        Try running SQL queries on a sample database. The database contains a 
+                        <code>customers</code> table with sample data.
+                    </p>
+                    
+                    <div class="sql-playground">
+                        <div class="sql-playground-header">
+                            <span class="sql-playground-title">🎮 Interactive Query Runner</span>
+                        </div>
+                        
+                        <div class="sql-editor">
+                            <textarea 
+                                id="sql-input" 
+                                class="sql-textarea" 
+                                placeholder="Type your SQL query here...\n\nExample:\nSELECT * FROM customers;">SELECT * FROM customers;</textarea>
+                        </div>
+                        
+                        <div class="sql-controls">
+                            <button id="run-query" class="btn btn-primary">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-right: 0.25rem;">
+                                    <path d="M3 2L13 8L3 14V2Z" fill="currentColor"/>
+                                </svg>
+                                Run Query
+                            </button>
+                            <button id="clear-query" class="btn btn-secondary">Clear</button>
+                            <span id="loading-indicator" style="display: none; color: var(--color-text-muted); font-size: var(--font-size-sm);">⏳ Executing...</span>
+                        </div>
+                        
+                        <div id="sql-results" class="sql-results"></div>
+                    </div>
+                    
+                    <div class="callout">
+                        <div class="callout-icon">📊</div>
+                        <div class="callout-content">
+                            <strong>Sample Data:</strong> The database has a <code>customers</code> table with columns: 
+                            id, name, email, country, age.
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- SQL Basics Section -->
+                <section id="basics">
+                    <h2>SQL Basics</h2>
+                    
+                    <h3>What is SQL?</h3>
+                    <p>
+                        SQL (Structured Query Language) is a standard language for managing 
+                        and manipulating relational databases.
+                    </p>
+                    
+                    <h4>Basic SELECT Statement</h4>
+                    <p>The <code>SELECT</code> statement retrieves data from a database:</p>
+                    
+                    <pre><code>SELECT column1, column2
+FROM table_name
+WHERE condition
+ORDER BY column1;</code></pre>
+                </section>
+                
+                <!-- Exercises Section -->
+                <section id="exercises">
+                    <h2>Exercises</h2>
+                    
+                    <div class="exercise-card">
+                        <div class="exercise-header">
+                            <span class="exercise-number">Exercise 1</span>
+                            <span class="exercise-difficulty">Beginner</span>
+                        </div>
+                        
+                        <div class="exercise-content">
+                            <h3>Select All Customers</h3>
+                            <p>Write a query to retrieve all data from the customers table.</p>
+                            
+                            <pre><code>-- Write your query here</code></pre>
+                        </div>
+                        
+                        <details class="solution">
+                            <summary>Show Solution</summary>
+                            <pre><code>SELECT * FROM customers;</code></pre>
+                            <p style="margin-top: 0.75rem; font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                                The asterisk (*) selects all columns from the table.
+                            </p>
+                        </details>
+                    </div>
+                    
+                    <div class="exercise-card">
+                        <div class="exercise-header">
+                            <span class="exercise-number">Exercise 2</span>
+                            <span class="exercise-difficulty">Beginner</span>
+                        </div>
+                        
+                        <div class="exercise-content">
+                            <h3>Filter by Country</h3>
+                            <p>Retrieve customers from the USA only.</p>
+                            
+                            <pre><code>-- Write your query here</code></pre>
+                        </div>
+                        
+                        <details class="solution">
+                            <summary>Show Solution</summary>
+                            <pre><code>SELECT * FROM customers
+WHERE country = 'USA';</code></pre>
+                            <p style="margin-top: 0.75rem; font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                                The WHERE clause filters rows based on a condition.
+                            </p>
+                        </details>
+                    </div>
+                </section>
+                
+            </article>
+        </main>
+    </div>
+    
+    <!-- JavaScript for SQL.js Integration and Navigation -->
+    <script>
+        let db = null;
+        
+        // Initialize SQL.js and create sample database
+        async function initDatabase() {
+            try {
+                const SQL = await initSqlJs({
+                    locateFile: file => `https://sql.js.org/dist/${file}`
+                });
+                
+                // Create new database
+                db = new SQL.Database();
+                
+                // Create sample table
+                db.run(`
+                    CREATE TABLE customers (
+                        id INTEGER PRIMARY KEY,
+                        name TEXT NOT NULL,
+                        email TEXT,
+                        country TEXT,
+                        age INTEGER
+                    );
+                `);
+                
+                // Insert sample data
+                db.run(`
+                    INSERT INTO customers (id, name, email, country, age) VALUES
+                    (1, 'John Doe', 'john.doe@email.com', 'USA', 32),
+                    (2, 'Jane Smith', 'jane.smith@email.com', 'UK', 28),
+                    (3, 'Carlos Garcia', 'carlos.garcia@email.com', 'Spain', 45),
+                    (4, 'Liu Wei', 'liu.wei@email.com', 'China', 35),
+                    (5, 'Sarah Johnson', 'sarah.j@email.com', 'USA', 29),
+                    (6, 'Mohammed Ahmed', 'mohammed.a@email.com', 'Egypt', 41),
+                    (7, 'Emma Wilson', 'emma.w@email.com', 'UK', 26),
+                    (8, 'Raj Patel', 'raj.patel@email.com', 'India', 38);
+                `);
+                
+                console.log('✅ Database initialized with sample data');
+            } catch (error) {
+                console.error('Failed to initialize database:', error);
+                displayError('Failed to initialize SQL database: ' + error.message);
+            }
+        }
+        
+        // Execute SQL query
+        function executeQuery(sql) {
+            const resultsDiv = document.getElementById('sql-results');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            
+            // Clear previous results
+            resultsDiv.innerHTML = '';
+            loadingIndicator.style.display = 'inline';
+            
+            // Simulate slight delay for better UX
+            setTimeout(() => {
+                try {
+                    if (!db) {
+                        throw new Error('Database not initialized');
+                    }
+                    
+                    const results = db.exec(sql);
+                    loadingIndicator.style.display = 'none';
+                    
+                    if (results.length === 0) {
+                        // Query executed but returned no results (e.g., INSERT, UPDATE, DELETE)
+                        resultsDiv.innerHTML = `
+                            <div class="success-message">
+                                ✓ Query executed successfully. No rows returned.
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Display results
+                    displayResults(results[0]);
+                    
+                } catch (error) {
+                    loadingIndicator.style.display = 'none';
+                    displayError(error.message);
+                }
+            }, 100);
+        }
+        
+        // Display query results as a table
+        function displayResults(result) {
+            const resultsDiv = document.getElementById('sql-results');
+            
+            if (!result || !result.values || result.values.length === 0) {
+                resultsDiv.innerHTML = '<div class="empty-state">No results found</div>';
+                return;
+            }
+            
+            let html = '<div class="results-header">Results (' + result.values.length + ' rows)</div>';
+            html += '<div class="results-table-container">';
+            html += '<table class="results-table">';
+            
+            // Table header
+            html += '<thead><tr>';
+            result.columns.forEach(col => {
+                html += `<th>${escapeHtml(col)}</th>`;
+            });
+            html += '</tr></thead>';
+            
+            // Table body
+            html += '<tbody>';
+            result.values.forEach(row => {
+                html += '<tr>';
+                row.forEach(cell => {
+                    html += `<td>${cell === null ? '<em style="color: var(--color-text-muted);">NULL</em>' : escapeHtml(String(cell))}</td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</tbody></table></div>';
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        // Display error message
+        function displayError(message) {
+            const resultsDiv = document.getElementById('sql-results');
+            resultsDiv.innerHTML = `
+                <div class="error-message">
+                    <strong>Error:</strong> ${escapeHtml(message)}
+                </div>
+            `;
+        }
+        
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize database
+            initDatabase();
+            
+            // Run query button
+            document.getElementById('run-query').addEventListener('click', () => {
+                const sql = document.getElementById('sql-input').value.trim();
+                if (sql) {
+                    executeQuery(sql);
+                } else {
+                    displayError('Please enter a SQL query');
+                }
+            });
+            
+            // Clear button
+            document.getElementById('clear-query').addEventListener('click', () => {
+                document.getElementById('sql-input').value = '';
+                document.getElementById('sql-results').innerHTML = '';
+            });
+            
+            // Allow Ctrl+Enter or Cmd+Enter to run query
+            document.getElementById('sql-input').addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('run-query').click();
+                }
+            });
+            
+            // Highlight active nav item based on scroll position
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-list a');
+            
+            function highlightNav() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (scrollY >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+            
+            window.addEventListener('scroll', highlightNav);
+        });
+    </script>
+</body>
+</html>
