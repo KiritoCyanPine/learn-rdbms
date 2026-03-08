@@ -1,3 +1,6 @@
+/* Import Prism.js theme */
+@import 'prismjs/themes/prism-tomorrow.css';
+
 /* ==================== CSS RESET ==================== */
 *, *::before, *::after {
     margin: 0;
@@ -84,6 +87,7 @@
 /* ==================== BASE STYLES ==================== */
 html {
     font-size: 18px;
+    background-color: gray;
 }
 
 body {
@@ -668,6 +672,289 @@ code, pre {
 
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+
+/* ==================== STUDY CONTENT ==================== */
+.study-content {
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    max-width: var(--max-content-width);
+}
+
+.study-content h2 {
+    color: var(--color-primary);
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 2px solid var(--color-border);
+}
+
+.study-content h2:first-child {
+    margin-top: 0;
+}
+
+.study-content h3 {
+    color: var(--color-text);
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-sm);
+}
+
+.study-content h4 {
+    color: var(--color-text);
+    margin-top: var(--space-md);
+    margin-bottom: var(--space-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.study-content p {
+    margin-bottom: var(--space-md);
+    line-height: var(--line-height-relaxed);
+}
+
+.study-content ul, .study-content ol {
+    margin-bottom: var(--space-md);
+    padding-left: var(--space-lg);
+}
+
+.study-content li {
+    margin-bottom: var(--space-xs);
+    line-height: var(--line-height-relaxed);
+}
+
+.study-content ul ul, .study-content ol ol {
+    margin-top: var(--space-xs);
+    margin-bottom: var(--space-xs);
+}
+
+.study-content pre {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin-bottom: var(--space-md);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+}
+
+.study-content code {
+    background: var(--color-bg-subtle);
+    color: var(--color-primary-dark);
+    padding: 0.2em 0.4em;
+    border-radius: var(--radius-sm);
+    font-size: 0.9em;
+}
+
+.study-content pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+}
+
+.study-content blockquote {
+    border-left: 4px solid var(--color-primary);
+    padding-left: var(--space-md);
+    margin: var(--space-md) 0;
+    color: var(--color-text-secondary);
+    font-style: italic;
+}
+
+.study-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: var(--space-md);
+    font-size: var(--font-size-sm);
+}
+
+.study-content table th,
+.study-content table td {
+    padding: var(--space-sm);
+    text-align: left;
+    border: 1px solid var(--color-border);
+}
+
+.study-content table th {
+    background: var(--color-bg-subtle);
+    font-weight: var(--font-weight-medium);
+}
+
+.study-content strong {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+}
+
+.study-content em {
+    font-style: italic;
+}
+
+.study-divider {
+    height: 2px;
+    background: linear-gradient(to right, var(--color-primary), transparent);
+    margin: var(--space-2xl) 0;
+    border: none;
+}
+
+/* ==================== ROADMAP VIEW ==================== */
+.roadmap-view {
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+}
+
+.roadmap-intro {
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+    color: white;
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.roadmap-intro h1 {
+    margin-bottom: var(--space-md);
+}
+
+.roadmap-intro h2 {
+    font-size: var(--font-size-lg);
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-sm);
+}
+
+.roadmap-intro ul,
+.roadmap-intro ol {
+    margin-left: var(--space-lg);
+    margin-bottom: var(--space-md);
+}
+
+.roadmap-intro li {
+    margin-bottom: var(--space-xs);
+}
+
+.roadmap-section {
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-lg);
+}
+
+.roadmap-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid var(--color-border);
+}
+
+.roadmap-section-title {
+    color: var(--color-primary);
+    font-size: var(--font-size-xl);
+    margin: 0;
+}
+
+.roadmap-week-badge {
+    background: var(--color-primary);
+    color: white;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+}
+
+.roadmap-module-link {
+    display: inline-block;
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-medium);
+    transition: background-color 0.2s ease;
+}
+
+.roadmap-module-link:hover {
+    background: var(--color-primary-dark);
+}
+
+.checkpoint-callout {
+    background: #fef3c7;
+    border-left: 4px solid var(--color-warning);
+    padding: var(--space-md);
+    margin: var(--space-lg) 0;
+    border-radius: var(--radius-md);
+}
+
+.checkpoint-callout strong {
+    color: #92400e;
+}
+
+/* ==================== PRISM.JS SYNTAX HIGHLIGHTING ==================== */
+/* Prism Tomorrow Night theme customized for indigo palette */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: #999988;
+    font-style: italic;
+}
+
+.token.namespace {
+    opacity: 0.7;
+}
+
+.token.string,
+.token.attr-value {
+    color: #e6db74;
+}
+
+.token.punctuation,
+.token.operator {
+    color: #f8f8f2;
+}
+
+.token.entity,
+.token.url,
+.token.symbol,
+.token.number,
+.token.boolean,
+.token.variable,
+.token.constant,
+.token.property,
+.token.regex,
+.token.inserted {
+    color: #ae81ff;
+}
+
+.token.atrule,
+.token.keyword,
+.token.attr-name,
+.language-autohotkey .token.selector {
+    color: #6366f1;  /* Indigo to match design */
+}
+
+.token.function,
+.token.deleted,
+.language-autohotkey .token.tag {
+    color: #66d9ef;
+}
+
+.token.tag,
+.token.selector,
+.language-autohotkey .token.keyword {
+    color: #f92672;
+}
+
+.token.important,
+.token.function,
+.token.bold {
+    font-weight: bold;
+}
+
+.token.italic {
+    font-style: italic;
 }
 
 /* ==================== RESPONSIVE ==================== */

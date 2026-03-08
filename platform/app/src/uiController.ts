@@ -1,5 +1,7 @@
 import { SQLManager } from './sqlManager';
 import { Module, Exercise } from './types';
+import { parseMarkdown } from './markdownRenderer';
+import { roadmapData } from './roadmapData';
 
 /**
  * UIController - Manages UI rendering and interactions
@@ -108,7 +110,22 @@ export class UIController {
    * Render navigation from modules
    */
   renderNavigation(modules: Module[]): void {
-    this.sidebarNav.innerHTML = modules
+    // Add Roadmap link at the top
+    const roadmapLink = `
+      <div class="nav-module">
+        <h4 class="nav-module-title">Overview</h4>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="#" class="nav-link" data-view="roadmap">
+              <span class="nav-link-icon">🗺️</span>
+              Learning Roadmap
+            </a>
+          </li>
+        </ul>
+      </div>
+    `;
+
+    const moduleLinks = modules
       .map(
         (module, index) => `
       <div class="nav-module">
@@ -126,8 +143,32 @@ export class UIController {
       )
       .join('');
 
-    // Attach nav link listeners
-    this.sidebarNav.querySelectorAll('.nav-link').forEach((link) => {
+    this.sidebarNav.innerHTML = roadmapLink + moduleLinks;
+
+    // Attach roadmap link listener
+    const roadmapNavLink = this.sidebarNav.querySelector(
+      '[data-view="roadmap"]',
+    );
+    if (roadmapNavLink) {
+      roadmapNavLink.addEventListener('click', (e: Event) => {
+        e.preventDefault();
+        this.renderRoadmap();
+
+        // Update active state
+        this.sidebarNav
+          .querySelectorAll('.nav-link')
+          .forEach((l) => l.classList.remove('is-active'));
+        roadmapNavLink.classList.add('is-active');
+
+        // Close sidebar on mobile
+        if (window.innerWidth <= 768) {
+          this.sidebar.classList.remove('is-open');
+        }
+      });
+    }
+
+    // Attach module nav link listeners
+    this.sidebarNav.querySelectorAll('[data-module-id]').forEach((link) => {
       link.addEventListener('click', (e: Event) => {
         e.preventDefault();
         const moduleId = (link as HTMLElement).dataset.moduleId;
@@ -151,6 +192,73 @@ export class UIController {
   }
 
   /**
+   * Render the learning roadmap view
+   */
+  renderRoadmap(): void {
+    this.currentModule = null;
+
+    // Update header
+    this.moduleTitle.textContent = 'Learning Roadmap';
+    this.moduleDescription.textContent =
+      'Your complete guide to mastering SQL and relational databases';
+
+    // Hide progress bar for roadmap view
+    const progressBar = document.querySelector('.progress-section');
+    if (progressBar) {
+      (progressBar as HTMLElement).style.display = 'none';
+    }
+
+    // Render roadmap content
+    const introHtml = parseMarkdown(roadmapData.learningPathIntro);
+    const sectionsHtml = roadmapData.sections
+      .map((section) => {
+        const moduleLink = section.relatedModuleId
+          ? `<a href="#" class="roadmap-module-link" data-module-id="${section.relatedModuleId}">Go to Exercises →</a>`
+          : '';
+
+        return `
+          <div class="roadmap-section">
+            <div class="roadmap-section-header">
+              <h2 class="roadmap-section-title">${section.title}</h2>
+              <span class="roadmap-week-badge">Week ${section.weekRange}</span>
+            </div>
+            <div class="study-content">
+              ${parseMarkdown(section.content)}
+            </div>
+            ${moduleLink}
+          </div>
+        `;
+      })
+      .join('');
+
+    this.exercisesContainer.innerHTML = `
+      <div class="roadmap-view">
+        <div class="roadmap-intro">
+          ${introHtml}
+        </div>
+        ${sectionsHtml}
+      </div>
+    `;
+
+    // Attach click handlers to module links
+    this.exercisesContainer
+      .querySelectorAll('.roadmap-module-link')
+      .forEach((link) => {
+        link.addEventListener('click', (e: Event) => {
+          e.preventDefault();
+          const moduleId = (link as HTMLElement).dataset.moduleId;
+          // Find module and trigger its nav link
+          const navLink = this.sidebarNav.querySelector(
+            `[data-module-id="${moduleId}"]`,
+          );
+          if (navLink) {
+            (navLink as HTMLElement).click();
+          }
+        });
+      });
+  }
+
+  /**
    * Load and display a module
    */
   loadModule(module: Module): void {
@@ -160,15 +268,48 @@ export class UIController {
     this.moduleTitle.textContent = module.title;
     this.moduleDescription.textContent = module.description;
 
+    // Show progress bar for module view
+    const progressBar = document.querySelector('.progress-section');
+    if (progressBar) {
+      (progressBar as HTMLElement).style.display = 'block';
+    }
+
     // Initialize database with module schema
     try {
       this.sqlManager.createDatabase(module.schema);
+
+      // Render study content before exercises
+      this.renderModuleStudyContent(module);
+
       this.renderExercises(module.exercises);
       this.updateProgress();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
       this.showError('Failed to load module: ' + message);
     }
+  }
+
+  /**
+   * Render module-specific study content (theory)
+   */
+  private renderModuleStudyContent(module: Module): void {
+    if (!module.studyContent) {
+      return; // No study content for this module
+    }
+
+    const studyContentHtml = parseMarkdown(module.studyContent);
+    const studyContainer = document.createElement('div');
+    studyContainer.className = 'study-content';
+    studyContainer.innerHTML = studyContentHtml;
+
+    // Add divider before exercises
+    const divider = document.createElement('hr');
+    divider.className = 'study-divider';
+
+    // Clear and prepend to exercises container
+    this.exercisesContainer.innerHTML = '';
+    this.exercisesContainer.appendChild(studyContainer);
+    this.exercisesContainer.appendChild(divider);
   }
 
   /**

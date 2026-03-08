@@ -20,6 +20,7 @@ export interface Module {
   description: string;
   schema: string;
   exercises: Exercise[];
+  studyContent?: string; // Markdown content for theory/study material
 }
 
 export interface ResultTable {
@@ -39,4 +40,17 @@ export interface QueryResult {
 export interface QueryExecutionResult {
   columns: string[];
   values: any[][];
+}
+
+export interface RoadmapSection {
+  id: string;
+  title: string;
+  content: string; // Markdown content
+  weekRange: string; // e.g., "1-2", "3", "7-8"
+  relatedModuleId?: string; // Links to exercise module if applicable
+}
+
+export interface Roadmap {
+  learningPathIntro: string; // Markdown content for the learning path overview
+  sections: RoadmapSection[];
 }
