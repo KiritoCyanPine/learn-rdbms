@@ -8,6 +8,10 @@ import UIController from './uiController';
 import exerciseModules from './exerciseData';
 import { ProgressManager } from './progressManager';
 
+const THEME_STORAGE_KEY = 'learnrdbms-theme';
+
+type ThemeMode = 'light' | 'dark';
+
 // Extend Window interface for debugging
 declare global {
   interface Window {
@@ -20,6 +24,9 @@ declare global {
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   try {
+    initializeTheme();
+    setupThemeToggle();
+
     // Show loading state
     showLoadingState();
 
@@ -69,6 +76,91 @@ document.addEventListener('DOMContentLoaded', async () => {
     showErrorState(message);
   }
 });
+
+function initializeTheme(): void {
+  const storedTheme = getStoredTheme();
+  const initialTheme = storedTheme ?? getSystemTheme();
+  applyTheme(initialTheme);
+
+  if (!storedTheme) {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (event: MediaQueryListEvent) => {
+      applyTheme(event.matches ? 'dark' : 'light');
+    };
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', handleChange);
+    } else if (typeof mediaQuery.addListener === 'function') {
+      mediaQuery.addListener(handleChange);
+    }
+  }
+}
+
+function setupThemeToggle(): void {
+  const toggle = document.getElementById(
+    'themeToggle',
+  ) as HTMLButtonElement | null;
+  if (!toggle) return;
+
+  toggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const nextTheme: ThemeMode = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(nextTheme);
+    storeTheme(nextTheme);
+  });
+}
+
+function applyTheme(theme: ThemeMode): void {
+  document.documentElement.setAttribute('data-theme', theme);
+  updateThemeToggle(theme);
+}
+
+function updateThemeToggle(theme: ThemeMode): void {
+  const toggle = document.getElementById(
+    'themeToggle',
+  ) as HTMLButtonElement | null;
+  const label = document.getElementById('themeToggleLabel');
+  if (!toggle || !label) return;
+
+  const isDark = theme === 'dark';
+  toggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+  toggle.setAttribute(
+    'aria-label',
+    isDark ? 'Switch to light mode' : 'Switch to dark mode',
+  );
+  label.textContent = isDark ? 'Dark' : 'Light';
+}
+
+function getStoredTheme(): ThemeMode | null {
+  try {
+    const stored = localStorage.getItem(THEME_STORAGE_KEY);
+    if (stored === 'light' || stored === 'dark') {
+      return stored;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function storeTheme(theme: ThemeMode): void {
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // Ignore storage errors.
+  }
+}
+
+function getSystemTheme(): ThemeMode {
+  if (window.matchMedia) {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  }
+
+  return 'light';
+}
 
 /**
  * Show loading state while initializing
