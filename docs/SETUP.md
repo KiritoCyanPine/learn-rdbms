@@ -290,7 +290,7 @@ Once everything is installed:
 
 ```bash
 # Clone or navigate to the learning repository
-cd /path/to/learnrdbms
+cd /path/to/learn-rdbms
 
 # Start with exercises
 cd exercises/01-sql-basics

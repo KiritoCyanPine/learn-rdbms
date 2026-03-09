@@ -5,13 +5,17 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = (env, argv) => {
     const isProduction = argv.mode === 'production';
 
+    // For GitHub Pages deployment to username.github.io/learn-rdbms/
+    // Set PUBLIC_PATH env var to override (e.g., PUBLIC_PATH=/ for custom domain)
+    const publicPath = process.env.PUBLIC_PATH || (isProduction ? '/learn-rdbms/' : '/');
+
     return {
         entry: './src/index.ts',
         output: {
             path: path.resolve(__dirname, 'dist'),
             filename: isProduction ? '[name].[contenthash].js' : '[name].js',
             clean: true,
-            publicPath: '/'
+            publicPath: publicPath
         },
         module: {
             rules: [

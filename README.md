@@ -5,7 +5,7 @@ A comprehensive, hands-on guide to mastering relational databases, SQL, and prac
 ## 🎯 Project Structure
 
 ```
-learnrdbms/
+learn-rdbms/
 ├── docs/              # 📚 Learning materials and exercises
 │   ├── README.md         # Complete learning roadmap
 │   ├── SETUP.md          # Installation and setup guide
