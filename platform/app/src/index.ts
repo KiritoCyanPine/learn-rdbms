@@ -6,12 +6,14 @@ import './styles.css';
 import SQLManager from './sqlManager';
 import UIController from './uiController';
 import exerciseModules from './exerciseData';
+import { ProgressManager } from './progressManager';
 
 // Extend Window interface for debugging
 declare global {
   interface Window {
     sqlManager?: SQLManager;
     uiController?: UIController;
+    progressManager?: typeof ProgressManager;
   }
 }
 
@@ -49,6 +51,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (process.env.NODE_ENV === 'development') {
       window.sqlManager = sqlManager;
       window.uiController = uiController;
+      window.progressManager = ProgressManager;
+
+      console.log('🛠️ Debug tools available:');
+      console.log('  - window.sqlManager');
+      console.log('  - window.uiController');
+      console.log('  - window.progressManager');
+      console.log('');
+      console.log('📊 Progress commands:');
+      console.log('  - window.progressManager.getProgressStats()');
+      console.log('  - window.progressManager.exportProgress()');
+      console.log('  - window.progressManager.clearProgress()');
     }
   } catch (error) {
     console.error('Failed to initialize app:', error);

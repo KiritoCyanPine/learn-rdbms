@@ -416,6 +416,12 @@ code, pre {
     border-top: 1px solid var(--color-border);
 }
 
+.exercise-hint {
+    color: var(--color-text-secondary);
+    padding-bottom: var(--space-md);
+    /* border-top: 1px solid var(--color-border); */
+}
+
 .solution-toggle {
     background: none;
     border: none;
@@ -444,6 +450,216 @@ code, pre {
 .solution-content pre {
     margin: 0;
     white-space: pre-wrap;
+}
+
+/* ==================== MCQ (Multiple Choice Questions) ==================== */
+.mcq-section {
+    margin-top: var(--space-xl);
+}
+
+.section-header {
+    margin-bottom: var(--space-lg);
+}
+
+.section-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    margin: 0 0 var(--space-xs) 0;
+}
+
+.section-description {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.mcq-card {
+    background: var(--color-bg-elevated);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.mcq-card:hover {
+    border-color: var(--color-primary-light);
+    box-shadow: var(--shadow-md);
+}
+
+.mcq-card.is-correct {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+.mcq-card.is-incorrect {
+    border-color: #ef4444;
+    background: #fef2f2;
+}
+
+.mcq-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+
+.mcq-title-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.mcq-number {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mcq-difficulty {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.mcq-question {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+    margin-bottom: var(--space-lg);
+    line-height: 1.6;
+}
+
+.mcq-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.mcq-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--color-bg);
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.mcq-option:hover {
+    border-color: var(--color-primary);
+    background: var(--color-bg-subtle);
+}
+
+.mcq-option input[type="radio"] {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.mcq-option input[type="radio"]:disabled {
+    cursor: not-allowed;
+}
+
+.mcq-option.is-selected {
+    border-color: var(--color-primary);
+    background: var(--color-bg-subtle);
+}
+
+.mcq-option.is-correct-answer {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+.mcq-option.is-correct-answer .option-text {
+    color: #065f46;
+    font-weight: var(--font-weight-medium);
+}
+
+.option-text {
+    flex: 1;
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+}
+
+.correct-indicator {
+    color: #10b981;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.mcq-actions {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+
+.mcq-feedback {
+    display: flex;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-md);
+}
+
+.mcq-feedback.feedback-correct {
+    background: #f0fdf4;
+    border: 2px solid #10b981;
+}
+
+.mcq-feedback.feedback-incorrect {
+    background: #fef2f2;
+    border: 2px solid #ef4444;
+}
+
+.feedback-icon {
+    font-size: 2rem;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.feedback-correct .feedback-icon {
+    color: #10b981;
+}
+
+.feedback-incorrect .feedback-icon {
+    color: #ef4444;
+}
+
+.feedback-content {
+    flex: 1;
+}
+
+.feedback-message {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--space-xs);
+}
+
+.feedback-correct .feedback-message {
+    color: #065f46;
+}
+
+.feedback-incorrect .feedback-message {
+    color: #991b1b;
+}
+
+.feedback-explanation {
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    margin-top: var(--space-sm);
 }
 
 /* ==================== BUTTONS ==================== */

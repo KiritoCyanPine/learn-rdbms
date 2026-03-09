@@ -21,6 +21,10 @@ module.exports = (env, argv) => {
                     exclude: /node_modules/
                 },
                 {
+                    test: /\.(md|sql)$/,
+                    type: 'asset/source'  // Webpack 5 built-in: loads file content as string
+                },
+                {
                     test: /\.css$/,
                     use: ['style-loader', 'css-loader']
                 }

@@ -161,6 +161,64 @@ INSERT INTO customers (name, email) VALUES
         expectedOutput: 'Single value showing count',
       },
     ],
+    mcqs: [
+      {
+        id: 1,
+        question: 'Which SQL command is used to retrieve data from a database?',
+        options: ['GET', 'SELECT', 'FETCH', 'RETRIEVE'],
+        correctAnswer: 1,
+        explanation:
+          'SELECT is the fundamental SQL command used to retrieve data from database tables.',
+        difficulty: 'easy',
+      },
+      {
+        id: 2,
+        question: 'What does the PRIMARY KEY constraint ensure?',
+        options: [
+          'The column can contain NULL values',
+          'Each row has a unique identifier',
+          'The column must contain text data',
+          'The column is sorted automatically',
+        ],
+        correctAnswer: 1,
+        explanation:
+          'A PRIMARY KEY uniquely identifies each row in a table and cannot contain NULL values.',
+        difficulty: 'easy',
+      },
+      {
+        id: 3,
+        question:
+          'Which SQL command is used to modify existing data in a table?',
+        options: ['MODIFY', 'CHANGE', 'UPDATE', 'ALTER'],
+        correctAnswer: 2,
+        explanation:
+          'UPDATE is used to modify existing records in a table. ALTER is used to modify table structure.',
+        difficulty: 'easy',
+      },
+      {
+        id: 4,
+        question: 'What is the purpose of the WHERE clause?',
+        options: [
+          'To specify which columns to display',
+          'To filter rows based on conditions',
+          'To sort the results',
+          'To join multiple tables',
+        ],
+        correctAnswer: 1,
+        explanation:
+          'The WHERE clause filters rows that meet specific conditions before returning results.',
+        difficulty: 'medium',
+      },
+      {
+        id: 5,
+        question: 'Which constraint prevents duplicate values in a column?',
+        options: ['PRIMARY KEY', 'UNIQUE', 'NOT NULL', 'Both A and B'],
+        correctAnswer: 3,
+        explanation:
+          'Both PRIMARY KEY and UNIQUE constraints prevent duplicate values. PRIMARY KEY also prevents NULL values.',
+        difficulty: 'medium',
+      },
+    ],
   },
   {
     id: 'data-retrieval',
@@ -478,6 +536,61 @@ FROM members m
 LEFT JOIN loans l ON m.member_id = l.member_id
 GROUP BY m.member_id, m.name;`,
         expectedOutput: 'Complete lending summary per member',
+      },
+    ],
+    mcqs: [
+      {
+        id: 1,
+        question:
+          'What is the main difference between INNER JOIN and LEFT JOIN?',
+        options: [
+          'INNER JOIN is faster than LEFT JOIN',
+          'LEFT JOIN returns all rows from the left table, INNER JOIN only returns matching rows',
+          'INNER JOIN can join more than 2 tables, LEFT JOIN cannot',
+          'There is no difference',
+        ],
+        correctAnswer: 1,
+        explanation:
+          'LEFT JOIN returns all rows from the left table even if there are no matches in the right table. INNER JOIN only returns rows where matches exist in both tables.',
+        difficulty: 'medium',
+      },
+      {
+        id: 2,
+        question:
+          'Which JOIN type returns the Cartesian product of two tables?',
+        options: ['INNER JOIN', 'LEFT JOIN', 'CROSS JOIN', 'FULL OUTER JOIN'],
+        correctAnswer: 2,
+        explanation:
+          'CROSS JOIN returns the Cartesian product, meaning every row from the first table is combined with every row from the second table.',
+        difficulty: 'medium',
+      },
+      {
+        id: 3,
+        question: 'What does the ON clause do in a JOIN statement?',
+        options: [
+          'Specifies which columns to display',
+          'Defines the relationship between the tables being joined',
+          'Filters the results after joining',
+          'Sorts the joined results',
+        ],
+        correctAnswer: 1,
+        explanation:
+          'The ON clause defines the condition that establishes how rows from different tables are related and should be joined together.',
+        difficulty: 'easy',
+      },
+      {
+        id: 4,
+        question: 'When would you use LEFT JOIN instead of INNER JOIN?',
+        options: [
+          'When you want better performance',
+          'When you need to include rows from the left table even if they have no matches',
+          'When joining more than two tables',
+          'When the tables have the same structure',
+        ],
+        correctAnswer: 1,
+        explanation:
+          "LEFT JOIN is used when you want to include all rows from the left table, even those that don't have corresponding matches in the right table.",
+        difficulty: 'medium',
       },
     ],
   },

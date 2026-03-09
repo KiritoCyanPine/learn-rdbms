@@ -1,7 +1,8 @@
 import { SQLManager } from './sqlManager';
-import { Module, Exercise } from './types';
+import { Module, Exercise, MCQ } from './types';
 import { parseMarkdown } from './markdownRenderer';
 import { roadmapData } from './roadmapData';
+import { ProgressManager } from './progressManager';
 
 /**
  * UIController - Manages UI rendering and interactions
@@ -11,6 +12,10 @@ export class UIController {
   private currentModule: Module | null = null;
   private currentExercise: Exercise | null = null;
   private completedExercises: Set<string> = new Set();
+  private mcqAnswers: Map<
+    string,
+    { selectedAnswer: number; isCorrect: boolean }
+  > = new Map();
 
   // Sidebar elements
   private sidebarNav!: HTMLElement;
@@ -36,8 +41,32 @@ export class UIController {
 
   constructor(sqlManager: SQLManager) {
     this.sqlManager = sqlManager;
+    this.loadProgressFromStorage();
     this.initializeElements();
     this.attachEventListeners();
+  }
+
+  /**
+   * Load progress from localStorage
+   */
+  private loadProgressFromStorage(): void {
+    const progress = ProgressManager.loadProgress();
+
+    // Restore completed exercises
+    this.completedExercises = new Set(progress.completedExercises);
+
+    // Restore MCQ answers
+    this.mcqAnswers = new Map(
+      Object.entries(progress.mcqAnswers).map(([key, value]) => [
+        key,
+        { selectedAnswer: value.selectedAnswer, isCorrect: value.isCorrect },
+      ]),
+    );
+
+    console.log('Progress loaded:', {
+      exercises: this.completedExercises.size,
+      mcqs: this.mcqAnswers.size,
+    });
   }
 
   private initializeElements(): void {
@@ -282,6 +311,12 @@ export class UIController {
       this.renderModuleStudyContent(module);
 
       this.renderExercises(module.exercises);
+
+      // Render MCQs if available
+      if (module.mcqs && module.mcqs.length > 0) {
+        this.renderMCQs(module.mcqs);
+      }
+
       this.updateProgress();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
@@ -404,6 +439,145 @@ export class UIController {
   }
 
   /**
+   * Render MCQ (Multiple Choice Questions) cards
+   */
+  private renderMCQs(mcqs: MCQ[]): void {
+    if (!this.currentModule) return;
+
+    // Add section header for MCQs
+    const mcqSection = document.createElement('div');
+    mcqSection.className = 'mcq-section';
+
+    const sectionHeader = document.createElement('div');
+    sectionHeader.className = 'section-header';
+    sectionHeader.innerHTML = `
+      <h2 class="section-title">📝 Practice Quiz</h2>
+      <p class="section-description">Test your understanding with these multiple choice questions</p>
+    `;
+    mcqSection.appendChild(sectionHeader);
+
+    // Render each MCQ
+    mcqs.forEach((mcq) => {
+      const mcqKey = `${this.currentModule!.id}-mcq-${mcq.id}`;
+      const savedAnswer = this.mcqAnswers.get(mcqKey);
+
+      const mcqCard = document.createElement('div');
+      mcqCard.className = `mcq-card ${savedAnswer ? (savedAnswer.isCorrect ? 'is-correct' : 'is-incorrect') : ''}`;
+      mcqCard.dataset.mcqId = mcq.id.toString();
+
+      mcqCard.innerHTML = `
+        <div class="mcq-header">
+          <div class="mcq-title-group">
+            <div class="mcq-number">Question ${mcq.id}</div>
+            <span class="mcq-difficulty difficulty-${mcq.difficulty}">
+              ${mcq.difficulty}
+            </span>
+          </div>
+        </div>
+        
+        <div class="mcq-question">${mcq.question}</div>
+        
+        <div class="mcq-options">
+          ${mcq.options
+            .map(
+              (option, index) => `
+            <label class="mcq-option ${savedAnswer && savedAnswer.selectedAnswer === index ? 'is-selected' : ''} ${savedAnswer ? (index === mcq.correctAnswer ? 'is-correct-answer' : '') : ''}" data-option-index="${index}">
+              <input 
+                type="radio" 
+                name="mcq-${this.currentModule!.id}-${mcq.id}" 
+                value="${index}"
+                ${savedAnswer ? 'disabled' : ''}
+                ${savedAnswer && savedAnswer.selectedAnswer === index ? 'checked' : ''}
+              />
+              <span class="option-text">${option}</span>
+              ${savedAnswer && index === mcq.correctAnswer ? '<span class="correct-indicator">✓</span>' : ''}
+            </label>
+          `,
+            )
+            .join('')}
+        </div>
+        
+        ${
+          !savedAnswer
+            ? `
+          <div class="mcq-actions">
+            <button class="btn btn-primary" data-action="submit-mcq" data-mcq-id="${mcq.id}">
+              Submit Answer
+            </button>
+          </div>
+        `
+            : ''
+        }
+        
+        ${
+          savedAnswer
+            ? `
+          <div class="mcq-feedback ${savedAnswer.isCorrect ? 'feedback-correct' : 'feedback-incorrect'}">
+            <div class="feedback-icon">${savedAnswer.isCorrect ? '✓' : '✗'}</div>
+            <div class="feedback-content">
+              <div class="feedback-message">
+                ${savedAnswer.isCorrect ? 'Correct!' : 'Incorrect. The correct answer is highlighted above.'}
+              </div>
+              ${mcq.explanation ? `<div class="feedback-explanation">${mcq.explanation}</div>` : ''}
+            </div>
+          </div>
+        `
+            : ''
+        }
+      `;
+
+      mcqSection.appendChild(mcqCard);
+    });
+
+    this.exercisesContainer.appendChild(mcqSection);
+
+    // Attach MCQ submit listeners
+    this.exercisesContainer
+      .querySelectorAll('[data-action="submit-mcq"]')
+      .forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const mcqId = parseInt((btn as HTMLElement).dataset.mcqId || '0');
+          this.handleMCQSubmit(mcqId, mcqs);
+        });
+      });
+  }
+
+  /**
+   * Handle MCQ answer submission
+   */
+  private handleMCQSubmit(mcqId: number, mcqs: MCQ[]): void {
+    if (!this.currentModule) return;
+
+    const mcq = mcqs.find((m) => m.id === mcqId);
+    if (!mcq) return;
+
+    const mcqKey = `${this.currentModule.id}-mcq-${mcqId}`;
+    const radioName = `mcq-${this.currentModule.id}-${mcqId}`;
+    const selectedRadio = document.querySelector(
+      `input[name="${radioName}"]:checked`,
+    ) as HTMLInputElement;
+
+    if (!selectedRadio) {
+      alert('Please select an answer before submitting.');
+      return;
+    }
+
+    const selectedAnswer = parseInt(selectedRadio.value);
+    const isCorrect = selectedAnswer === mcq.correctAnswer;
+
+    // Save answer in memory
+    this.mcqAnswers.set(mcqKey, { selectedAnswer, isCorrect });
+
+    // Save to localStorage
+    ProgressManager.saveMCQAnswer(mcqKey, selectedAnswer, isCorrect);
+
+    // Re-render to show feedback
+    if (this.currentModule.mcqs) {
+      this.loadModule(this.currentModule);
+    }
+  }
+
+  /**
    * Open query modal with exercise context
    */
   private openQueryModal(exercise: Exercise | null = null): void {
@@ -450,6 +624,10 @@ export class UIController {
         if (this.currentExercise && this.currentModule) {
           const exerciseKey = `${this.currentModule.id}-${this.currentExercise.id}`;
           this.completedExercises.add(exerciseKey);
+
+          // Save to localStorage
+          ProgressManager.addCompletedExercise(exerciseKey);
+
           this.updateProgress();
 
           // Update exercise card
