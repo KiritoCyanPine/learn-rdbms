@@ -8,11 +8,10 @@ import { roadmapData } from './roadmapData';
 
 export const exerciseModules: Module[] = [
   {
-    id: 'sql-basics',
-    title: '01. SQL Basics',
+    id: 'ddl-database-design',
+    title: '01. Database Design & DDL',
     description:
-      'Learn fundamental SQL commands: CREATE, INSERT, SELECT, UPDATE, DELETE',
-    // Combine sections 1 and 2 for Module 01
+      'Master table creation, constraints, data types, and schema modifications with ALTER TABLE',
     studyContent: `${roadmapData.sections.find((s) => s.id === 'intro-rdbms')?.content}\n\n---\n\n${roadmapData.sections.find((s) => s.id === 'sql-basics')?.content}`,
     schema: `
 -- Bookstore Database Schema
@@ -65,114 +64,99 @@ INSERT INTO customers (name, email) VALUES
     exercises: [
       {
         id: 1,
-        title: 'Select all books',
-        description: 'Display all columns from the books table',
+        title: 'Create a simple table',
+        description:
+          'Create a table called "publishers" with columns: publisher_id (INTEGER PRIMARY KEY), name (TEXT NOT NULL), and country (TEXT)',
         difficulty: 'easy',
-        hint: 'Use SELECT * to get all columns',
-        solution: 'SELECT * FROM books;',
-        expectedOutput: 'All book records with all columns',
+        hint: 'Use CREATE TABLE with column definitions',
+        solution: `CREATE TABLE publishers (
+    publisher_id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    country TEXT
+);`,
+        expectedOutput: 'Table created successfully',
       },
       {
         id: 2,
-        title: 'Select specific columns',
-        description: 'Display only the title and price of all books',
-        difficulty: 'easy',
-        hint: 'List the column names after SELECT',
-        solution: 'SELECT title, price FROM books;',
-        expectedOutput: 'Two columns: title and price',
+        title: 'Create table with constraints',
+        description:
+          'Create a "reviews" table with: review_id (auto-incrementing PRIMARY KEY), book_id (INTEGER NOT NULL), reviewer_email (TEXT UNIQUE NOT NULL), rating (INTEGER with CHECK between 1-5), and review_text (TEXT)',
+        difficulty: 'medium',
+        hint: 'Use AUTOINCREMENT, UNIQUE, NOT NULL, and CHECK constraints',
+        solution: `CREATE TABLE reviews (
+    review_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id INTEGER NOT NULL,
+    reviewer_email TEXT UNIQUE NOT NULL,
+    rating INTEGER CHECK(rating BETWEEN 1 AND 5),
+    review_text TEXT
+);`,
+        expectedOutput: 'Table with constraints created',
       },
       {
         id: 3,
-        title: 'Select with aliases',
-        description: 'Display book titles as "Book Title" and prices as "Cost"',
-        difficulty: 'easy',
-        hint: 'Use AS keyword to create column aliases',
-        solution: 'SELECT title AS "Book Title", price AS "Cost" FROM books;',
-        expectedOutput: 'Two columns with custom names',
+        title: 'Create table with DEFAULT values',
+        description:
+          'Create an "orders" table with: order_id (PRIMARY KEY), customer_id (INTEGER NOT NULL), order_date (TEXT with DEFAULT CURRENT_DATE), status (TEXT with DEFAULT "Pending"), and total_amount (REAL with DEFAULT 0.00)',
+        difficulty: 'medium',
+        hint: 'Use DEFAULT keyword for default values',
+        solution: `CREATE TABLE orders (
+    order_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER NOT NULL,
+    order_date TEXT DEFAULT CURRENT_DATE,
+    status TEXT DEFAULT 'Pending',
+    total_amount REAL DEFAULT 0.00
+);`,
+        expectedOutput: 'Table with default values created',
       },
       {
         id: 4,
-        title: 'Select with calculations',
+        title: 'Create table with FOREIGN KEY',
         description:
-          'Display book titles with their prices including 10% tax (alias as "price_with_tax")',
-        difficulty: 'medium',
-        hint: 'Multiply price by 1.10 to add 10% tax',
-        solution: 'SELECT title, price * 1.10 AS price_with_tax FROM books;',
-        expectedOutput: 'Book titles with calculated prices',
+          'Create a "book_authors" junction table with: book_id (INTEGER), author_id (INTEGER), both forming a composite PRIMARY KEY, and both as FOREIGN KEYs referencing books(book_id) and authors(author_id)',
+        difficulty: 'hard',
+        hint: 'Use PRIMARY KEY(col1, col2) and FOREIGN KEY constraints',
+        solution: `CREATE TABLE book_authors (
+    book_id INTEGER NOT NULL,
+    author_id INTEGER NOT NULL,
+    PRIMARY KEY (book_id, author_id),
+    FOREIGN KEY (book_id) REFERENCES books(book_id),
+    FOREIGN KEY (author_id) REFERENCES authors(author_id)
+);`,
+        expectedOutput: 'Junction table with foreign keys created',
       },
       {
         id: 5,
-        title: 'Calculate total inventory value',
+        title: 'Drop a table',
         description:
-          'Calculate the total value of each book in stock (price × stock_quantity)',
-        difficulty: 'medium',
-        hint: 'Multiply price by stock_quantity',
-        solution:
-          'SELECT title, price * stock_quantity AS total_value FROM books;',
-        expectedOutput: 'Book titles with total inventory values',
+          'Drop the "orders" table you created earlier (if it exists)',
+        difficulty: 'easy',
+        hint: 'Use DROP TABLE IF EXISTS',
+        solution: 'DROP TABLE IF EXISTS orders;',
+        expectedOutput: 'Table dropped successfully',
       },
       {
         id: 6,
-        title: 'Insert a new author',
+        title: 'ALTER TABLE - Add column',
         description:
-          'Add yourself as an author with your country and birth year',
-        difficulty: 'easy',
-        hint: 'Use INSERT INTO authors VALUES',
-        solution:
-          "INSERT INTO authors (name, country, birth_year) VALUES ('Your Name', 'Your Country', 2000);",
-        expectedOutput: '1 row inserted',
+          'Add a new column "website" (TEXT) to the publishers table',
+        difficulty: 'medium',
+        hint: 'Use ALTER TABLE ADD COLUMN',
+        solution: 'ALTER TABLE publishers ADD COLUMN website TEXT;',
+        expectedOutput: 'Column added successfully',
       },
       {
         id: 7,
-        title: 'Update book prices',
-        description: 'Increase the price of all books by $2.00',
-        difficulty: 'medium',
-        hint: 'Use UPDATE with SET and add 2 to price',
-        solution: 'UPDATE books SET price = price + 2.00;',
-        expectedOutput: 'All book prices updated',
-      },
-      {
-        id: 8,
-        title: 'Update with condition',
-        description:
-          "Update George Orwell's country to 'India' (he was actually born in India)",
-        difficulty: 'medium',
-        hint: 'Use UPDATE with WHERE clause',
-        solution:
-          "UPDATE authors SET country = 'India' WHERE name = 'George Orwell';",
-        expectedOutput: '1 row updated',
-      },
-      {
-        id: 9,
-        title: 'Delete with condition',
-        description: 'Delete the customer with email "michael.b@email.com"',
-        difficulty: 'medium',
-        hint: 'Use DELETE FROM with WHERE clause',
-        solution: "DELETE FROM customers WHERE email = 'michael.b@email.com';",
-        expectedOutput: '1 row deleted',
-      },
-      {
-        id: 10,
-        title: 'Count records',
-        description: 'How many books are in the database?',
+        title: 'ALTER TABLE - Rename table',
+        description: 'Rename the publishers table to "publishing_houses"',
         difficulty: 'easy',
-        hint: 'Use COUNT(*) aggregate function',
-        solution: 'SELECT COUNT(*) AS total_books FROM books;',
-        expectedOutput: 'Single value showing count',
+        hint: 'Use ALTER TABLE RENAME TO',
+        solution: 'ALTER TABLE publishers RENAME TO publishing_houses;',
+        expectedOutput: 'Table renamed successfully',
       },
     ],
     mcqs: [
       {
         id: 1,
-        question: 'Which SQL command is used to retrieve data from a database?',
-        options: ['GET', 'SELECT', 'FETCH', 'RETRIEVE'],
-        correctAnswer: 1,
-        explanation:
-          'SELECT is the fundamental SQL command used to retrieve data from database tables.',
-        difficulty: 'easy',
-      },
-      {
-        id: 2,
         question: 'What does the PRIMARY KEY constraint ensure?',
         options: [
           'The column can contain NULL values',
@@ -186,31 +170,7 @@ INSERT INTO customers (name, email) VALUES
         difficulty: 'easy',
       },
       {
-        id: 3,
-        question:
-          'Which SQL command is used to modify existing data in a table?',
-        options: ['MODIFY', 'CHANGE', 'UPDATE', 'ALTER'],
-        correctAnswer: 2,
-        explanation:
-          'UPDATE is used to modify existing records in a table. ALTER is used to modify table structure.',
-        difficulty: 'easy',
-      },
-      {
-        id: 4,
-        question: 'What is the purpose of the WHERE clause?',
-        options: [
-          'To specify which columns to display',
-          'To filter rows based on conditions',
-          'To sort the results',
-          'To join multiple tables',
-        ],
-        correctAnswer: 1,
-        explanation:
-          'The WHERE clause filters rows that meet specific conditions before returning results.',
-        difficulty: 'medium',
-      },
-      {
-        id: 5,
+        id: 2,
         question: 'Which constraint prevents duplicate values in a column?',
         options: ['PRIMARY KEY', 'UNIQUE', 'NOT NULL', 'Both A and B'],
         correctAnswer: 3,
@@ -218,13 +178,168 @@ INSERT INTO customers (name, email) VALUES
           'Both PRIMARY KEY and UNIQUE constraints prevent duplicate values. PRIMARY KEY also prevents NULL values.',
         difficulty: 'medium',
       },
+      {
+        id: 3,
+        question: 'What is the purpose of a FOREIGN KEY constraint?',
+        options: [
+          'To make queries faster',
+          'To enforce referential integrity between tables',
+          'To prevent NULL values',
+          'To automatically generate unique values',
+        ],
+        correctAnswer: 1,
+        explanation:
+          'FOREIGN KEY constraints enforce referential integrity by ensuring values in one table match values in another table.',
+        difficulty: 'medium',
+      },
+    ],
+  },
+  {
+    id: 'dml-basics',
+    title: '02. Data Manipulation (DML)',
+    description:
+      'Master INSERT, UPDATE, DELETE with various conditions and patterns',
+    studyContent: roadmapData.sections.find((s) => s.id === 'sql-basics')
+      ?.content,
+    schema: `
+-- Bookstore Database Schema
+CREATE TABLE authors (
+    author_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    country TEXT,
+    birth_year INTEGER
+);
+
+CREATE TABLE books (
+    book_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER,
+    genre TEXT,
+    price REAL CHECK(price >= 0),
+    publication_year INTEGER,
+    stock_quantity INTEGER DEFAULT 0,
+    FOREIGN KEY (author_id) REFERENCES authors(author_id)
+);
+
+CREATE TABLE customers (
+    customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    join_date TEXT DEFAULT CURRENT_DATE
+);
+
+-- Sample Data
+INSERT INTO authors (name, country, birth_year) VALUES
+('George Orwell', 'England', 1903),
+('Jane Austen', 'England', 1775),
+('Mark Twain', 'USA', 1835),
+('Harper Lee', 'USA', 1926);
+
+INSERT INTO books (title, author_id, genre, price, publication_year, stock_quantity) VALUES
+('1984', 1, 'Fiction', 15.99, 1949, 50),
+('Animal Farm', 1, 'Fiction', 12.99, 1945, 45),
+('Pride and Prejudice', 2, 'Romance', 14.99, 1813, 30),
+('Emma', 2, 'Romance', 13.99, 1815, 25),
+('The Adventures of Tom Sawyer', 3, 'Adventure', 11.99, 1876, 35),
+('To Kill a Mockingbird', 4, 'Fiction', 16.99, 1960, 60);
+
+INSERT INTO customers (name, email) VALUES
+('Alice Johnson', 'alice.j@email.com'),
+('Bob Smith', 'bob.smith@email.com'),
+('Carol White', 'carol.w@email.com'),
+('Michael Brown', 'michael.b@email.com');
+    `.trim(),
+    exercises: [
+      {
+        id: 1,
+        title: 'Simple INSERT',
+        description:
+          'Add yourself as an author with your country and birth year',
+        difficulty: 'easy',
+        hint: 'Use INSERT INTO authors (columns) VALUES (values)',
+        solution:
+          "INSERT INTO authors (name, country, birth_year) VALUES ('Your Name', 'Your Country', 2000);",
+        expectedOutput: '1 row inserted',
+      },
+      {
+        id: 2,
+        title: 'INSERT with default values',
+        description:
+          'Insert a new customer with name and email (let join_date use its default)',
+        difficulty: 'easy',
+        hint: 'Omit the join_date column to use DEFAULT',
+        solution:
+          "INSERT INTO customers (name, email) VALUES ('David Lee', 'david.l@email.com');",
+        expectedOutput: '1 row inserted with default join_date',
+      },
+      {
+        id: 3,
+        title: 'Multiple INSERT',
+        description: 'Insert 3 new books in a single statement',
+        difficulty: 'medium',
+        hint: 'Use INSERT with multiple value sets separated by commas',
+        solution: `INSERT INTO books (title, author_id, genre, price, publication_year, stock_quantity) VALUES
+('Book One', 1, 'Fiction', 19.99, 2020, 100),
+('Book Two', 2, 'Romance', 14.99, 2021, 75),
+('Book Three', 3, 'Adventure', 16.99, 2022, 50);`,
+        expectedOutput: '3 rows inserted',
+      },
+      {
+        id: 4,
+        title: 'UPDATE all rows',
+        description: 'Increase the price of all books by $2.00',
+        difficulty: 'easy',
+        hint: 'Use UPDATE without WHERE to affect all rows',
+        solution: 'UPDATE books SET price = price + 2.00;',
+        expectedOutput: 'All book prices updated',
+      },
+      {
+        id: 5,
+        title: 'UPDATE with WHERE',
+        description:
+          "Update George Orwell's country to 'India' (he was actually born in India)",
+        difficulty: 'medium',
+        hint: 'Use UPDATE with WHERE clause',
+        solution:
+          "UPDATE authors SET country = 'India' WHERE name = 'George Orwell';",
+        expectedOutput: '1 row updated',
+      },
+      {
+        id: 6,
+        title: 'UPDATE multiple columns',
+        description:
+          'For "1984", update both price to $18.99 and stock_quantity to 100',
+        difficulty: 'medium',
+        hint: 'Use UPDATE with multiple SET assignments',
+        solution:
+          "UPDATE books SET price = 18.99, stock_quantity = 100 WHERE title = '1984';",
+        expectedOutput: '1 row updated with multiple columns',
+      },
+      {
+        id: 7,
+        title: 'DELETE with condition',
+        description: 'Delete the customer with email "michael.b@email.com"',
+        difficulty: 'medium',
+        hint: 'Use DELETE FROM with WHERE clause',
+        solution: "DELETE FROM customers WHERE email = 'michael.b@email.com';",
+        expectedOutput: '1 row deleted',
+      },
+      {
+        id: 8,
+        title: 'DELETE with complex condition',
+        description: 'Delete all books with stock_quantity less than 30',
+        difficulty: 'medium',
+        hint: 'Use DELETE with comparison operator',
+        solution: 'DELETE FROM books WHERE stock_quantity < 30;',
+        expectedOutput: 'Multiple rows deleted',
+      },
     ],
   },
   {
     id: 'data-retrieval',
-    title: '02. Data Retrieval',
+    title: '03. Data Retrieval & Functions',
     description:
-      'Master WHERE clauses, sorting, filtering, and pattern matching',
+      'Master SELECT with DISTINCT, CASE expressions, string functions, and pattern matching',
     studyContent: roadmapData.sections.find((s) => s.id === 'data-retrieval')
       ?.content,
     schema: `
@@ -270,6 +385,15 @@ INSERT INTO orders (customer_name, product_id, quantity, order_date, status) VAL
     exercises: [
       {
         id: 1,
+        title: 'SELECT DISTINCT categories',
+        description: 'List all unique product categories (no duplicates)',
+        difficulty: 'easy',
+        hint: 'Use SELECT DISTINCT',
+        solution: 'SELECT DISTINCT category FROM products;',
+        expectedOutput: 'Unique categories only',
+      },
+      {
+        id: 2,
         title: 'Filter by category',
         description: 'Find all products in the Electronics category',
         difficulty: 'easy',
@@ -278,7 +402,7 @@ INSERT INTO orders (customer_name, product_id, quantity, order_date, status) VAL
         expectedOutput: 'All electronics products',
       },
       {
-        id: 2,
+        id: 3,
         title: 'Price range query',
         description: 'Find products priced between $10 and $100',
         difficulty: 'easy',
@@ -287,17 +411,8 @@ INSERT INTO orders (customer_name, product_id, quantity, order_date, status) VAL
         expectedOutput: 'Products in specified price range',
       },
       {
-        id: 3,
-        title: 'Sort by price',
-        description: 'List all products ordered by price (highest to lowest)',
-        difficulty: 'easy',
-        hint: 'Use ORDER BY with DESC',
-        solution: 'SELECT * FROM products ORDER BY price DESC;',
-        expectedOutput: 'Products sorted by price descending',
-      },
-      {
         id: 4,
-        title: 'Pattern matching',
+        title: 'Pattern matching with LIKE',
         description: 'Find all products whose name starts with "Office"',
         difficulty: 'medium',
         hint: 'Use LIKE operator with % wildcard',
@@ -306,299 +421,337 @@ INSERT INTO orders (customer_name, product_id, quantity, order_date, status) VAL
       },
       {
         id: 5,
-        title: 'Multiple conditions',
-        description: 'Find Electronics products with rating above 4.3',
+        title: 'CASE expression - Price category',
+        description:
+          'Categorize products as "Budget" (< $50), "Mid-range" ($50-$200), or "Premium" (> $200)',
         difficulty: 'medium',
-        hint: 'Combine WHERE conditions with AND',
-        solution:
-          "SELECT * FROM products WHERE category = 'Electronics' AND rating > 4.3;",
-        expectedOutput: 'Filtered electronics with high ratings',
+        hint: 'Use CASE WHEN with multiple conditions',
+        solution: `SELECT product_name, price,
+       CASE
+           WHEN price < 50 THEN 'Budget'
+           WHEN price BETWEEN 50 AND 200 THEN 'Mid-range'
+           ELSE 'Premium'
+       END AS price_category
+FROM products;`,
+        expectedOutput: 'Products with price categories',
       },
       {
         id: 6,
+        title: 'String function - UPPER',
+        description: 'Display product names in uppercase',
+        difficulty: 'easy',
+        hint: 'Use UPPER() function',
+        solution:
+          'SELECT product_name, UPPER(product_name) AS name_upper FROM products;',
+        expectedOutput: 'Product names in uppercase',
+      },
+      {
+        id: 7,
+        title: 'String function - LENGTH',
+        description: 'Find products with names longer than 10 characters',
+        difficulty: 'medium',
+        hint: 'Use LENGTH() function in WHERE clause',
+        solution:
+          'SELECT product_name, LENGTH(product_name) AS name_length FROM products WHERE LENGTH(product_name) > 10;',
+        expectedOutput: 'Products with long names',
+      },
+      {
+        id: 8,
+        title: 'COALESCE for NULL handling',
+        description:
+          'Display products with rating, showing "No rating" for NULL ratings',
+        difficulty: 'medium',
+        hint: 'Use COALESCE() to handle NULL values',
+        solution:
+          'SELECT product_name, COALESCE(rating, 0) AS rating_display FROM products;',
+        expectedOutput: 'Products with default for NULL ratings',
+      },
+      {
+        id: 9,
+        title: 'Multiple conditions with AND/OR',
+        description:
+          'Find Electronics products with rating above 4.3 OR price below $30',
+        difficulty: 'medium',
+        hint: 'Combine WHERE conditions with AND/OR',
+        solution:
+          "SELECT * FROM products WHERE category = 'Electronics' AND (rating > 4.3 OR price < 30);",
+        expectedOutput: 'Filtered products',
+      },
+      {
+        id: 10,
         title: 'IN operator',
         description:
           'Find products from either TechSupply Co or Paper Plus suppliers',
-        difficulty: 'medium',
+        difficulty: 'easy',
         hint: 'Use IN operator with list of values',
         solution:
           "SELECT * FROM products WHERE supplier IN ('TechSupply Co', 'Paper Plus');",
         expectedOutput: 'Products from specified suppliers',
       },
       {
-        id: 7,
-        title: 'NULL handling',
-        description: 'Find products with no rating (NULL rating)',
+        id: 11,
+        title: 'ORDER BY with multiple columns',
+        description:
+          'List products sorted by category (ascending), then price (descending)',
         difficulty: 'medium',
-        hint: 'Use IS NULL operator',
-        solution: 'SELECT * FROM products WHERE rating IS NULL;',
-        expectedOutput: 'Products without ratings',
+        hint: 'Use ORDER BY with multiple columns and different directions',
+        solution: 'SELECT * FROM products ORDER BY category ASC, price DESC;',
+        expectedOutput: 'Products sorted by category then price',
       },
       {
-        id: 8,
-        title: 'Limit results',
-        description: 'Get the top 3 most expensive products',
-        difficulty: 'easy',
-        hint: 'Use ORDER BY with LIMIT',
-        solution: 'SELECT * FROM products ORDER BY price DESC LIMIT 3;',
-        expectedOutput: 'Top 3 expensive products',
+        id: 12,
+        title: 'LIMIT with OFFSET',
+        description: 'Get products 4-6 when sorted by price (pagination)',
+        difficulty: 'medium',
+        hint: 'Use ORDER BY, LIMIT, and OFFSET',
+        solution: 'SELECT * FROM products ORDER BY price LIMIT 3 OFFSET 3;',
+        expectedOutput: 'Page 2 of products',
       },
     ],
   },
   {
     id: 'joins',
-    title: '03. Joins',
+    title: '04. Joins & Set Operations',
     description:
-      'Learn to combine data from multiple tables using INNER JOIN, LEFT JOIN, and more',
+      'Master table relationships with INNER JOIN, LEFT JOIN, and combining result sets with UNION',
     studyContent: roadmapData.sections.find((s) => s.id === 'joins')?.content,
     schema: `
--- Library Database
+-- Library Management System
+CREATE TABLE libraries (
+    library_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    library_name TEXT NOT NULL,
+    city TEXT NOT NULL
+);
+
 CREATE TABLE members (
     member_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    membership_type TEXT CHECK(membership_type IN ('Basic', 'Premium', 'Student'))
+);
+
+CREATE TABLE authors (
+    author_id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    join_date TEXT DEFAULT CURRENT_DATE
+    country TEXT
 );
 
 CREATE TABLE books (
     book_id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
-    author TEXT NOT NULL,
-    isbn TEXT UNIQUE
+    publication_year INTEGER,
+    genre TEXT,
+    library_id INTEGER,
+    FOREIGN KEY (library_id) REFERENCES libraries(library_id)
+);
+
+CREATE TABLE book_authors (
+    book_id INTEGER,
+    author_id INTEGER,
+    PRIMARY KEY (book_id, author_id),
+    FOREIGN KEY (book_id) REFERENCES books(book_id),
+    FOREIGN KEY (author_id) REFERENCES authors(author_id)
 );
 
 CREATE TABLE loans (
     loan_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    member_id INTEGER NOT NULL,
     book_id INTEGER NOT NULL,
+    member_id INTEGER NOT NULL,
     loan_date TEXT NOT NULL,
     due_date TEXT NOT NULL,
     return_date TEXT,
-    FOREIGN KEY (member_id) REFERENCES members(member_id),
-    FOREIGN KEY (book_id) REFERENCES books(book_id)
+    FOREIGN KEY (book_id) REFERENCES books(book_id),
+    FOREIGN KEY (member_id) REFERENCES members(member_id)
 );
 
 -- Sample Data
-INSERT INTO members (name, email) VALUES
-('Alice Johnson', 'alice@library.com'),
-('Bob Smith', 'bob@library.com'),
-('Carol White', 'carol@library.com'),
-('David Brown', 'david@library.com');
+INSERT INTO libraries (library_name, city) VALUES
+('Central Library', 'Springfield'),
+('West Branch', 'Springfield'),
+('East Branch', 'Springfield'),
+('North Library', 'Shelbyville');
 
-INSERT INTO books (title, author, isbn) VALUES
-('The Great Gatsby', 'F. Scott Fitzgerald', '978-0743273565'),
-('To Kill a Mockingbird', 'Harper Lee', '978-0061120084'),
-('1984', 'George Orwell', '978-0451524935'),
-('Pride and Prejudice', 'Jane Austen', '978-0141439518'),
-('The Catcher in the Rye', 'J.D. Salinger', '978-0316769174');
+INSERT INTO members (first_name, last_name, email, membership_type) VALUES
+('Alice', 'Johnson', 'alice@email.com', 'Premium'),
+('Bob', 'Smith', 'bob@email.com', 'Basic'),
+('Carol', 'Williams', 'carol@email.com', 'Student'),
+('David', 'Brown', 'david@email.com', 'Premium'),
+('Eve', 'Davis', 'eve@email.com', 'Basic');
 
-INSERT INTO loans (member_id, book_id, loan_date, due_date, return_date) VALUES
+INSERT INTO authors (name, country) VALUES
+('George Orwell', 'England'),
+('Jane Austen', 'England'),
+('Mark Twain', 'USA'),
+('Isaac Asimov', 'USA'),
+('Stephen King', 'USA');
+
+INSERT INTO books (title, publication_year, genre, library_id) VALUES
+('1984', 1949, 'Dystopian', 1),
+('Animal Farm', 1945, 'Political Fiction', 1),
+('Pride and Prejudice', 1813, 'Romance', 2),
+('Adventures of Huckleberry Finn', 1884, 'Adventure', 2),
+('Foundation', 1951, 'Science Fiction', 3),
+('I, Robot', 1950, 'Science Fiction', 3),
+('The Shining', 1977, 'Horror', 2);
+
+INSERT INTO book_authors (book_id, author_id) VALUES
+(1, 1), (2, 1), (3, 2), (4, 3), (5, 4), (6, 4), (7, 5);
+
+INSERT INTO loans (book_id, member_id, loan_date, due_date, return_date) VALUES
 (1, 1, '2024-01-10', '2024-01-24', '2024-01-22'),
-(2, 2, '2024-01-15', '2024-01-29', NULL),
-(1, 3, '2024-01-20', '2024-02-03', NULL),
 (3, 1, '2024-01-25', '2024-02-08', '2024-02-05'),
-(2, 4, '2024-02-01', '2024-02-15', NULL);
+(5, 2, '2024-01-15', '2024-01-29', NULL),
+(7, 3, '2024-02-01', '2024-02-15', NULL),
+(2, 4, '2024-01-20', '2024-02-03', '2024-02-10');
     `.trim(),
     exercises: [
       {
         id: 1,
-        title: 'Basic INNER JOIN',
-        description: 'List all loans with member names and book titles',
+        title: 'Simple INNER JOIN',
+        description: 'List all books with their library names',
         difficulty: 'easy',
-        hint: 'Join loans with members and books tables',
-        solution: `SELECT m.name, b.title, l.loan_date, l.due_date
-FROM loans l
-INNER JOIN members m ON l.member_id = m.member_id
-INNER JOIN books b ON l.book_id = b.book_id;`,
-        expectedOutput: 'All loans with member and book details',
+        hint: 'Join books and libraries tables using library_id',
+        solution: `SELECT b.title, l.library_name
+FROM books b
+INNER JOIN libraries l ON b.library_id = l.library_id;`,
+        expectedOutput: 'Book titles with their library names',
       },
       {
         id: 2,
-        title: 'LEFT JOIN - All members',
-        description:
-          'Show all members with their loan information (include members with no loans)',
-        difficulty: 'medium',
-        hint: 'Use LEFT JOIN to include all members even if they have no loans',
-        solution: `SELECT m.name, m.email, b.title, l.loan_date
-FROM members m
-LEFT JOIN loans l ON m.member_id = l.member_id
-LEFT JOIN books b ON l.book_id = b.book_id;`,
-        expectedOutput: 'All members including those with no loans',
+        title: 'JOIN with WHERE clause',
+        description: 'Find all books in Central Library',
+        difficulty: 'easy',
+        hint: 'Add WHERE condition after the JOIN',
+        solution: `SELECT b.title, b.genre, l.library_name
+FROM books b
+INNER JOIN libraries l ON b.library_id = l.library_id
+WHERE l.library_name = 'Central Library';`,
+        expectedOutput: 'Books from Central Library',
       },
       {
         id: 3,
-        title: 'LEFT JOIN with COUNT',
-        description:
-          'Show all members and how many books they have currently borrowed (not returned)',
+        title: 'Three-table JOIN',
+        description: 'List all loans with book titles and member names',
         difficulty: 'medium',
-        hint: 'Use LEFT JOIN and COUNT with GROUP BY, filter for NULL return_date',
-        solution: `SELECT m.name, COUNT(l.loan_id) AS books_borrowed
-FROM members m
-LEFT JOIN loans l ON m.member_id = l.member_id AND l.return_date IS NULL
-GROUP BY m.member_id, m.name;`,
-        expectedOutput: 'All members with count of unreturned books',
+        hint: 'Join loans, books, and members tables',
+        solution: `SELECT m.first_name || ' ' || m.last_name AS member_name,
+       b.title AS book_title,
+       ln.loan_date,
+       ln.return_date
+FROM loans ln
+INNER JOIN members m ON ln.member_id = m.member_id
+INNER JOIN books b ON ln.book_id = b.book_id;`,
+        expectedOutput: 'Loan records with member and book details',
       },
       {
         id: 4,
-        title: 'Find unreturned books',
-        description:
-          'List all books currently on loan (not returned) with borrower names',
+        title: 'Many-to-many JOIN',
+        description: 'Show all books with their author names',
         difficulty: 'medium',
-        hint: 'Join tables and filter for NULL return_date',
-        solution: `SELECT b.title, b.author, m.name AS borrower, l.due_date
-FROM loans l
-INNER JOIN books b ON l.book_id = b.book_id
-INNER JOIN members m ON l.member_id = m.member_id
-WHERE l.return_date IS NULL;`,
-        expectedOutput: 'Currently borrowed books with borrower info',
+        hint: 'Join through book_authors junction table',
+        solution: `SELECT b.title, a.name AS author_name, b.publication_year
+FROM books b
+INNER JOIN book_authors ba ON b.book_id = ba.book_id
+INNER JOIN authors a ON ba.author_id = a.author_id
+ORDER BY a.name;`,
+        expectedOutput: 'Books with author information',
       },
       {
         id: 5,
-        title: 'Books never borrowed',
-        description: 'Find all books that have never been loaned out',
+        title: 'LEFT JOIN with NULL check',
+        description: 'Find authors who have no books in the system',
         difficulty: 'medium',
-        hint: 'Use LEFT JOIN and check for NULL loan_id',
-        solution: `SELECT b.title, b.author, b.isbn
-FROM books b
-LEFT JOIN loans l ON b.book_id = l.book_id
-WHERE l.loan_id IS NULL;`,
-        expectedOutput: 'Books with no loan history',
+        hint: 'LEFT JOIN authors to book_authors, check for NULL',
+        solution: `SELECT a.name, a.country
+FROM authors a
+LEFT JOIN book_authors ba ON a.author_id = ba.author_id
+WHERE ba.book_id IS NULL;`,
+        expectedOutput: 'Authors without books',
       },
       {
         id: 6,
-        title: 'CROSS JOIN - All possible combinations',
+        title: 'LEFT JOIN with aggregation',
         description:
-          'Generate all possible member-book combinations (Cartesian product)',
+          'Show all libraries with their book count (include libraries with zero books)',
         difficulty: 'medium',
-        hint: 'Use CROSS JOIN to get all combinations',
-        solution: `SELECT m.name AS member_name, b.title AS book_title
-FROM members m
-CROSS JOIN books b
-ORDER BY m.name, b.title
-LIMIT 10;`,
-        expectedOutput: 'All possible member-book pairs',
+        hint: 'LEFT JOIN libraries to books, use COUNT with GROUP BY',
+        solution: `SELECT l.library_name, l.city, COUNT(b.book_id) AS book_count
+FROM libraries l
+LEFT JOIN books b ON l.library_id = b.library_id
+GROUP BY l.library_id, l.library_name, l.city;`,
+        expectedOutput: 'All libraries with book counts',
       },
       {
         id: 7,
-        title: 'Multiple JOINs with filtering',
-        description:
-          'Find all members who borrowed books written by Jane Austen',
-        difficulty: 'hard',
-        hint: 'Join all three tables and filter by author name',
-        solution: `SELECT DISTINCT m.name, m.email
-FROM members m
-INNER JOIN loans l ON m.member_id = l.member_id
-INNER JOIN books b ON l.book_id = b.book_id
-WHERE b.author = 'Jane Austen';`,
-        expectedOutput: 'Members who borrowed Jane Austen books',
+        title: 'Active loans (filtering NULLs)',
+        description: 'Find currently borrowed books (return_date IS NULL)',
+        difficulty: 'medium',
+        hint: 'Join loans, members, and books; filter where return_date IS NULL',
+        solution: `SELECT m.first_name || ' ' || m.last_name AS member_name,
+       b.title AS book_title,
+       ln.due_date
+FROM loans ln
+INNER JOIN members m ON ln.member_id = m.member_id
+INNER JOIN books b ON ln.book_id = b.book_id
+WHERE ln.return_date IS NULL
+ORDER BY ln.loan_date;`,
+        expectedOutput: 'Currently borrowed books',
       },
       {
         id: 8,
-        title: 'JOIN with aggregation',
+        title: 'Complex multi-table JOIN',
         description:
-          'Count total loans per book (including books with 0 loans)',
+          'Find books never loaned - show title, author name, and library name',
         difficulty: 'hard',
-        hint: 'Use LEFT JOIN with COUNT and GROUP BY book',
-        solution: `SELECT b.title, b.author, COUNT(l.loan_id) AS times_borrowed
+        hint: 'Use LEFT JOIN on loans, filter where loan_id IS NULL',
+        solution: `SELECT b.title, a.name AS author_name, l.library_name
 FROM books b
-LEFT JOIN loans l ON b.book_id = l.book_id
-GROUP BY b.book_id, b.title, b.author
-ORDER BY times_borrowed DESC;`,
-        expectedOutput: 'Books with their loan counts',
+INNER JOIN book_authors ba ON b.book_id = ba.book_id
+INNER JOIN authors a ON ba.author_id = a.author_id
+INNER JOIN libraries l ON b.library_id = l.library_id
+LEFT JOIN loans ln ON b.book_id = ln.book_id
+WHERE ln.loan_id IS NULL
+ORDER BY b.title;`,
+        expectedOutput: 'Books that have never been borrowed',
       },
       {
         id: 9,
-        title: 'Overdue books',
+        title: 'UNION - Combine member emails',
         description:
-          'Find all unreturned books where the due date has passed (use "2024-02-10" as current date)',
-        difficulty: 'hard',
-        hint: 'Join tables, filter for NULL return_date and due_date < current date',
-        solution: `SELECT b.title, m.name AS borrower, l.loan_date, l.due_date,
-       julianday('2024-02-10') - julianday(l.due_date) AS days_overdue
-FROM loans l
-INNER JOIN books b ON l.book_id = b.book_id
-INNER JOIN members m ON l.member_id = m.member_id
-WHERE l.return_date IS NULL AND l.due_date < '2024-02-10';`,
-        expectedOutput: 'Overdue books with days overdue',
+          'Get a list of all contact emails: members + a hardcoded admin email',
+        difficulty: 'medium',
+        hint: 'Use UNION to combine member emails with a SELECT of literal value',
+        solution: `SELECT email, 'Member' AS contact_type FROM members
+UNION
+SELECT 'admin@library.com', 'Admin';`,
+        expectedOutput: 'Combined list of all contact emails',
       },
       {
         id: 10,
-        title: 'Member lending history summary',
+        title: 'UNION ALL - Books from multiple libraries',
         description:
-          'For each member, show total books borrowed, books returned, and books still out',
-        difficulty: 'hard',
-        hint: 'Use LEFT JOIN with CASE statements for conditional counting',
-        solution: `SELECT m.name,
-       COUNT(l.loan_id) AS total_borrowed,
-       SUM(CASE WHEN l.return_date IS NOT NULL THEN 1 ELSE 0 END) AS returned,
-       SUM(CASE WHEN l.return_date IS NULL THEN 1 ELSE 0 END) AS still_out
-FROM members m
-LEFT JOIN loans l ON m.member_id = l.member_id
-GROUP BY m.member_id, m.name;`,
-        expectedOutput: 'Complete lending summary per member',
-      },
-    ],
-    mcqs: [
-      {
-        id: 1,
-        question:
-          'What is the main difference between INNER JOIN and LEFT JOIN?',
-        options: [
-          'INNER JOIN is faster than LEFT JOIN',
-          'LEFT JOIN returns all rows from the left table, INNER JOIN only returns matching rows',
-          'INNER JOIN can join more than 2 tables, LEFT JOIN cannot',
-          'There is no difference',
-        ],
-        correctAnswer: 1,
-        explanation:
-          'LEFT JOIN returns all rows from the left table even if there are no matches in the right table. INNER JOIN only returns rows where matches exist in both tables.',
+          'Combine books from Central Library and West Branch (keep duplicates if any)',
         difficulty: 'medium',
-      },
-      {
-        id: 2,
-        question:
-          'Which JOIN type returns the Cartesian product of two tables?',
-        options: ['INNER JOIN', 'LEFT JOIN', 'CROSS JOIN', 'FULL OUTER JOIN'],
-        correctAnswer: 2,
-        explanation:
-          'CROSS JOIN returns the Cartesian product, meaning every row from the first table is combined with every row from the second table.',
-        difficulty: 'medium',
-      },
-      {
-        id: 3,
-        question: 'What does the ON clause do in a JOIN statement?',
-        options: [
-          'Specifies which columns to display',
-          'Defines the relationship between the tables being joined',
-          'Filters the results after joining',
-          'Sorts the joined results',
-        ],
-        correctAnswer: 1,
-        explanation:
-          'The ON clause defines the condition that establishes how rows from different tables are related and should be joined together.',
-        difficulty: 'easy',
-      },
-      {
-        id: 4,
-        question: 'When would you use LEFT JOIN instead of INNER JOIN?',
-        options: [
-          'When you want better performance',
-          'When you need to include rows from the left table even if they have no matches',
-          'When joining more than two tables',
-          'When the tables have the same structure',
-        ],
-        correctAnswer: 1,
-        explanation:
-          "LEFT JOIN is used when you want to include all rows from the left table, even those that don't have corresponding matches in the right table.",
-        difficulty: 'medium',
+        hint: 'Use UNION ALL with two separate SELECT queries filtering by library_name',
+        solution: `SELECT b.title, l.library_name, 'Central' AS source
+FROM books b
+INNER JOIN libraries l ON b.library_id = l.library_id
+WHERE l.library_name = 'Central Library'
+UNION ALL
+SELECT b.title, l.library_name, 'West' AS source
+FROM books b
+INNER JOIN libraries l ON b.library_id = l.library_id
+WHERE l.library_name = 'West Branch';`,
+        expectedOutput: 'Books from both libraries with source tag',
       },
     ],
   },
   {
     id: 'aggregation',
-    title: '04. Aggregation',
+    title: '05. Aggregation & Grouping',
     description:
-      'Master aggregate functions: COUNT, SUM, AVG, MIN, MAX with GROUP BY and HAVING',
+      'Master aggregate functions: COUNT, SUM, AVG, MIN, MAX, GROUP_CONCAT with GROUP BY and HAVING',
     studyContent: roadmapData.sections.find((s) => s.id === 'aggregation')
       ?.content,
     schema: `
@@ -665,25 +818,106 @@ GROUP BY c.region;`,
       },
       {
         id: 3,
-        title: 'HAVING clause',
-        description:
-          'Find customers who have placed orders totaling more than $3000',
-        difficulty: 'hard',
-        hint: 'Use SUM with GROUP BY and HAVING clause',
-        solution: `SELECT c.name, SUM(o.total_amount) AS total_spent
+        title: 'AVG - Average order value',
+        description: 'Calculate the average order amount per customer',
+        difficulty: 'medium',
+        hint: 'Use AVG aggregate function with GROUP BY',
+        solution: `SELECT c.name, AVG(o.total_amount) AS avg_order_value
 FROM customers c
 INNER JOIN orders o ON c.customer_id = o.customer_id
-GROUP BY c.customer_id, c.name
-HAVING SUM(o.total_amount) > 3000;`,
-        expectedOutput: 'Customers with total orders > $3000',
+GROUP BY c.customer_id, c.name;`,
+        expectedOutput: 'Average order value per customer',
+      },
+      {
+        id: 4,
+        title: 'MIN and MAX - Order range',
+        description: 'Find the smallest and largest order for each region',
+        difficulty: 'medium',
+        hint: 'Use MIN and MAX functions in same query',
+        solution: `SELECT c.region, 
+       MIN(o.total_amount) AS smallest_order,
+       MAX(o.total_amount) AS largest_order
+FROM customers c
+INNER JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.region;`,
+        expectedOutput: 'Min and max order amounts per region',
+      },
+      {
+        id: 5,
+        title: 'GROUP_CONCAT - Combine values',
+        description:
+          'List all cities where customers are located in each region',
+        difficulty: 'medium',
+        hint: 'Use GROUP_CONCAT to combine city names per region',
+        solution: `SELECT region, GROUP_CONCAT(DISTINCT city) AS cities
+FROM customers
+GROUP BY region;`,
+        expectedOutput: 'Regions with comma-separated city lists',
+      },
+      {
+        id: 6,
+        title: 'COUNT(DISTINCT) - Unique counts',
+        description:
+          'Count the number of distinct customers who placed orders each month',
+        difficulty: 'hard',
+        hint: 'Use COUNT(DISTINCT) with strftime to extract month',
+        solution: `SELECT strftime('%Y-%m', order_date) AS month,
+       COUNT(DISTINCT customer_id) AS unique_customers
+FROM orders
+GROUP BY strftime('%Y-%m', order_date);`,
+        expectedOutput: 'Unique customer count per month',
+      },
+      {
+        id: 7,
+        title: 'Multiple GROUP BY columns',
+        description: 'Calculate total sales by region and order status',
+        difficulty: 'hard',
+        hint: 'GROUP BY both region and status columns',
+        solution: `SELECT c.region, o.status, SUM(o.total_amount) AS total_sales
+FROM customers c
+INNER JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.region, o.status
+ORDER BY c.region, o.status;`,
+        expectedOutput: 'Sales totals grouped by region and status',
+      },
+      {
+        id: 8,
+        title: 'HAVING with multiple conditions',
+        description:
+          'Find regions with more than 2 orders AND total sales above $4000',
+        difficulty: 'hard',
+        hint: 'Use HAVING clause with AND combining multiple aggregate conditions',
+        solution: `SELECT c.region, 
+       COUNT(o.order_id) AS order_count,
+       SUM(o.total_amount) AS total_sales
+FROM customers c
+INNER JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.region
+HAVING COUNT(o.order_id) > 2 AND SUM(o.total_amount) > 4000;`,
+        expectedOutput: 'Regions meeting both count and sales thresholds',
+      },
+      {
+        id: 9,
+        title: 'Aggregates with CASE',
+        description: 'Count completed vs pending orders for each customer',
+        difficulty: 'hard',
+        hint: 'Use COUNT with CASE WHEN inside to conditionally count',
+        solution: `SELECT c.name,
+       COUNT(CASE WHEN o.status = 'Completed' THEN 1 END) AS completed_orders,
+       COUNT(CASE WHEN o.status = 'Pending' THEN 1 END) AS pending_orders,
+       COUNT(o.order_id) AS total_orders
+FROM customers c
+LEFT JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_id, c.name;`,
+        expectedOutput: 'Order counts by status for each customer',
       },
     ],
   },
   {
     id: 'subqueries',
-    title: '05. Subqueries',
+    title: '06. Subqueries & CTEs',
     description:
-      'Learn to use subqueries in SELECT, WHERE, and FROM clauses for complex queries',
+      'Master subqueries in SELECT, WHERE, FROM clauses and Common Table Expressions (WITH clause) for readable complex queries',
     studyContent: roadmapData.sections.find((s) => s.id === 'subqueries')
       ?.content,
     schema: `
@@ -700,7 +934,9 @@ CREATE TABLE employees (
     dept_id INTEGER NOT NULL,
     salary REAL NOT NULL,
     hire_date TEXT NOT NULL,
-    FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+    manager_id INTEGER,
+    FOREIGN KEY (dept_id) REFERENCES departments(dept_id),
+    FOREIGN KEY (manager_id) REFERENCES employees(emp_id)
 );
 
 -- Sample Data
@@ -710,15 +946,15 @@ INSERT INTO departments (dept_name, location) VALUES
 ('Marketing', 'Chicago'),
 ('HR', 'Boston');
 
-INSERT INTO employees (name, dept_id, salary, hire_date) VALUES
-('John Smith', 1, 95000, '2022-01-15'),
-('Sarah Johnson', 1, 105000, '2021-06-01'),
-('Mike Brown', 1, 85000, '2023-03-10'),
-('Emily Davis', 2, 75000, '2022-08-20'),
-('David Wilson', 2, 82000, '2021-11-05'),
-('Lisa Anderson', 3, 70000, '2023-01-15'),
-('James Taylor', 3, 68000, '2022-05-01'),
-('Maria Garcia', 4, 65000, '2021-09-10');
+INSERT INTO employees (name, dept_id, salary, hire_date, manager_id) VALUES
+('John Smith', 1, 95000, '2022-01-15', NULL),
+('Sarah Johnson', 1, 105000, '2021-06-01', 1),
+('Mike Brown', 1, 85000, '2023-03-10', 1),
+('Emily Davis', 2, 75000, '2022-08-20', NULL),
+('David Wilson', 2, 82000, '2021-11-05', 4),
+('Lisa Anderson', 3, 70000, '2023-01-15', NULL),
+('James Taylor', 3, 68000, '2022-05-01', 6),
+('Maria Garcia', 4, 65000, '2021-09-10', NULL);
     `.trim(),
     exercises: [
       {
@@ -763,11 +999,313 @@ FROM employees e
 INNER JOIN departments d ON e.dept_id = d.dept_id;`,
         expectedOutput: 'Employees with department average comparison',
       },
+      {
+        id: 4,
+        title: 'Simple CTE (WITH clause)',
+        description: 'Use a CTE to find employees earning above average salary',
+        difficulty: 'medium',
+        hint: 'Define a CTE with WITH to calculate average, then reference it',
+        solution: `WITH avg_salary_cte AS (
+    SELECT AVG(salary) AS avg_sal FROM employees
+)
+SELECT e.name, e.salary, a.avg_sal
+FROM employees e, avg_salary_cte a
+WHERE e.salary > a.avg_sal;`,
+        expectedOutput: 'Employees above average with average displayed',
+      },
+      {
+        id: 5,
+        title: 'Multiple CTEs',
+        description:
+          'Use two CTEs to find departments and their employee counts, then filter for large departments',
+        difficulty: 'hard',
+        hint: 'Define multiple CTEs separated by commas in WITH clause',
+        solution: `WITH dept_counts AS (
+    SELECT dept_id, COUNT(*) AS emp_count
+    FROM employees
+    GROUP BY dept_id
+),
+high_salary_depts AS (
+    SELECT dept_id
+    FROM employees
+    WHERE salary > 80000
+    GROUP BY dept_id
+)
+SELECT d.dept_name, dc.emp_count
+FROM departments d
+INNER JOIN dept_counts dc ON d.dept_id = dc.dept_id
+INNER JOIN high_salary_depts hsd ON d.dept_id = hsd.dept_id;`,
+        expectedOutput: 'Departments with high salaries and their counts',
+      },
+      {
+        id: 6,
+        title: 'CTE with aggregation',
+        description:
+          'Create a CTE that calculates department statistics, then query it',
+        difficulty: 'hard',
+        hint: 'Build a CTE with GROUP BY, then SELECT from it',
+        solution: `WITH dept_stats AS (
+    SELECT d.dept_name,
+           COUNT(e.emp_id) AS emp_count,
+           AVG(e.salary) AS avg_salary,
+           MAX(e.salary) AS max_salary
+    FROM departments d
+    LEFT JOIN employees e ON d.dept_id = e.dept_id
+    GROUP BY d.dept_id, d.dept_name
+)
+SELECT dept_name, emp_count, 
+       ROUND(avg_salary, 2) AS avg_salary,
+       max_salary
+FROM dept_stats
+WHERE emp_count > 0
+ORDER BY avg_salary DESC;`,
+        expectedOutput: 'Department statistics ordered by average salary',
+      },
+      {
+        id: 7,
+        title: 'Recursive CTE - Employee hierarchy',
+        description:
+          'Find all employees and their management chain using recursive CTE',
+        difficulty: 'hard',
+        hint: 'Use WITH RECURSIVE to traverse manager relationships',
+        solution: `WITH RECURSIVE emp_hierarchy AS (
+    -- Base case: top-level managers (no manager)
+    SELECT emp_id, name, manager_id, 0 AS level,
+           name AS path
+    FROM employees
+    WHERE manager_id IS NULL
+    
+    UNION ALL
+    
+    -- Recursive case: employees with managers
+    SELECT e.emp_id, e.name, e.manager_id, eh.level + 1,
+           eh.path || ' -> ' || e.name
+    FROM employees e
+    INNER JOIN emp_hierarchy eh ON e.manager_id = eh.emp_id
+)
+SELECT level, name, path
+FROM emp_hierarchy
+ORDER BY level, name;`,
+        expectedOutput: 'Employee hierarchy with reporting paths',
+      },
+    ],
+  },
+  {
+    id: 'window-functions',
+    title: '07. Window Functions',
+    description:
+      'Master analytical queries with ROW_NUMBER, RANK, LAG, LEAD, and aggregate window functions for advanced data analysis',
+    studyContent: roadmapData.sections.find((s) => s.id === 'advanced-sql')
+      ?.content,
+    schema: `
+-- Sales Analytics Database
+CREATE TABLE sales_reps (
+    rep_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rep_name TEXT NOT NULL,
+    region TEXT NOT NULL
+);
+
+CREATE TABLE sales (
+    sale_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    rep_id INTEGER NOT NULL,
+    sale_date TEXT NOT NULL,
+    product TEXT NOT NULL,
+    amount REAL NOT NULL,
+    FOREIGN KEY (rep_id) REFERENCES sales_reps(rep_id)
+);
+
+-- Sample Data
+INSERT INTO sales_reps (rep_name, region) VALUES
+('Alice Johnson', 'East'),
+('Bob Smith', 'East'),
+('Carol Williams', 'West'),
+('David Brown', 'West'),
+('Eve Davis', 'Central');
+
+INSERT INTO sales (rep_id, sale_date, product, amount) VALUES
+(1, '2024-01-05', 'Laptop', 1200.00),
+(1, '2024-01-12', 'Monitor', 300.00),
+(1, '2024-01-20', 'Keyboard', 75.00),
+(2, '2024-01-08', 'Laptop', 1200.00),
+(2, '2024-01-15', 'Mouse', 25.00),
+(3, '2024-01-10', 'Monitor', 350.00),
+(3, '2024-01-18', 'Laptop', 1400.00),
+(4, '2024-01-12', 'Keyboard', 80.00),
+(4, '2024-01-22', 'Monitor', 320.00),
+(5, '2024-01-15', 'Laptop', 1300.00),
+(5, '2024-01-25', 'Monitor', 300.00);
+    `.trim(),
+    exercises: [
+      {
+        id: 1,
+        title: 'ROW_NUMBER() - Sequential numbering',
+        description:
+          'Assign a sequential number to each sale ordered by sale_date',
+        difficulty: 'medium',
+        hint: 'Use ROW_NUMBER() OVER (ORDER BY sale_date)',
+        solution: `SELECT sale_id, 
+       product, 
+       sale_date, 
+       amount,
+       ROW_NUMBER() OVER (ORDER BY sale_date) AS row_num
+FROM sales;`,
+        expectedOutput: 'Sales with sequential row numbers',
+      },
+      {
+        id: 2,
+        title: 'RANK() vs DENSE_RANK()',
+        description:
+          'Rank sales by amount (show difference between RANK and DENSE_RANK)',
+        difficulty: 'medium',
+        hint: 'RANK leaves gaps after ties, DENSE_RANK does not',
+        solution: `SELECT product,
+       amount,
+       RANK() OVER (ORDER BY amount DESC) AS rank,
+       DENSE_RANK() OVER (ORDER BY amount DESC) AS dense_rank
+FROM sales;`,
+        expectedOutput: 'Sales ranked by amount with both ranking methods',
+      },
+      {
+        id: 3,
+        title: 'PARTITION BY - Ranking within groups',
+        description: 'Rank sales within each region by amount',
+        difficulty: 'medium',
+        hint: 'Use PARTITION BY region with RANK()',
+        solution: `SELECT sr.region,
+       sr.rep_name,
+       s.product,
+       s.amount,
+       RANK() OVER (PARTITION BY sr.region ORDER BY s.amount DESC) AS region_rank
+FROM sales s
+INNER JOIN sales_reps sr ON s.rep_id = sr.rep_id;`,
+        expectedOutput: 'Sales ranked within each region',
+      },
+      {
+        id: 4,
+        title: 'LAG() - Access previous row',
+        description:
+          'Show each sale with the previous sale amount for the same rep',
+        difficulty: 'hard',
+        hint: 'Use LAG(amount) OVER (PARTITION BY rep_id ORDER BY sale_date)',
+        solution: `SELECT sr.rep_name,
+       s.sale_date,
+       s.product,
+       s.amount,
+       LAG(s.amount) OVER (PARTITION BY s.rep_id ORDER BY s.sale_date) AS previous_sale_amount
+FROM sales s
+INNER JOIN sales_reps sr ON s.rep_id = sr.rep_id;`,
+        expectedOutput: 'Sales with previous sale amount per rep',
+      },
+      {
+        id: 5,
+        title: 'LEAD() - Access next row',
+        description: 'Show each sale with the next sale date for the same rep',
+        difficulty: 'hard',
+        hint: 'Use LEAD(sale_date) OVER (PARTITION BY rep_id ORDER BY sale_date)',
+        solution: `SELECT sr.rep_name,
+       s.sale_date,
+       s.product,
+       LEAD(s.sale_date) OVER (PARTITION BY s.rep_id ORDER BY s.sale_date) AS next_sale_date
+FROM sales s
+INNER JOIN sales_reps sr ON s.rep_id = sr.rep_id;`,
+        expectedOutput: 'Sales with next sale date per rep',
+      },
+      {
+        id: 6,
+        title: 'Running total with SUM() OVER()',
+        description: 'Calculate running total of sales amount ordered by date',
+        difficulty: 'hard',
+        hint: 'Use SUM(amount) OVER (ORDER BY sale_date ROWS UNBOUNDED PRECEDING)',
+        solution: `SELECT sale_date,
+       product,
+       amount,
+       SUM(amount) OVER (ORDER BY sale_date ROWS UNBOUNDED PRECEDING) AS running_total
+FROM sales;`,
+        expectedOutput: 'Sales with cumulative running total',
+      },
+      {
+        id: 7,
+        title: 'Running total per rep',
+        description: 'Calculate running total of sales amount per sales rep',
+        difficulty: 'hard',
+        hint: 'Use PARTITION BY rep_id with SUM() OVER()',
+        solution: `SELECT sr.rep_name,
+       s.sale_date,
+       s.product,
+       s.amount,
+       SUM(s.amount) OVER (
+           PARTITION BY s.rep_id 
+           ORDER BY s.sale_date 
+           ROWS UNBOUNDED PRECEDING
+       ) AS rep_running_total
+FROM sales s
+INNER JOIN sales_reps sr ON s.rep_id = sr.rep_id;`,
+        expectedOutput: 'Running total per sales rep',
+      },
+      {
+        id: 8,
+        title: 'Moving average with window frame',
+        description: 'Calculate 3-sale moving average of amounts per rep',
+        difficulty: 'hard',
+        hint: 'Use ROWS BETWEEN 2 PRECEDING AND CURRENT ROW for 3-row window',
+        solution: `SELECT sr.rep_name,
+       s.sale_date,
+       s.amount,
+       AVG(s.amount) OVER (
+           PARTITION BY s.rep_id 
+           ORDER BY s.sale_date 
+           ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+       ) AS moving_avg_3
+FROM sales s
+INNER JOIN sales_reps sr ON s.rep_id = sr.rep_id;`,
+        expectedOutput: 'Sales with 3-sale moving average per rep',
+      },
+      {
+        id: 9,
+        title: 'Percentage of total with window functions',
+        description: 'Calculate each sale as percentage of total region sales',
+        difficulty: 'hard',
+        hint: 'Divide amount by SUM() OVER (PARTITION BY region)',
+        solution: `SELECT sr.region,
+       sr.rep_name,
+       s.amount,
+       ROUND(
+           100.0 * s.amount / SUM(s.amount) OVER (PARTITION BY sr.region),
+           2
+       ) AS pct_of_region_sales
+FROM sales s
+INNER JOIN sales_reps sr ON s.rep_id = sr.rep_id;`,
+        expectedOutput: 'Sales as percentage of region total',
+      },
+      {
+        id: 10,
+        title: 'Top N per group',
+        description:
+          'Find top 2 sales by amount in each region using window functions',
+        difficulty: 'hard',
+        hint: 'Use ROW_NUMBER() PARTITION BY region, then filter in outer query or CTE',
+        solution: `WITH ranked_sales AS (
+    SELECT sr.region,
+           sr.rep_name,
+           s.product,
+           s.amount,
+           ROW_NUMBER() OVER (
+               PARTITION BY sr.region 
+               ORDER BY s.amount DESC
+           ) AS rank
+    FROM sales s
+    INNER JOIN sales_reps sr ON s.rep_id = sr.rep_id
+)
+SELECT region, rep_name, product, amount
+FROM ranked_sales
+WHERE rank <= 2;`,
+        expectedOutput: 'Top 2 sales per region',
+      },
     ],
   },
   {
     id: 'advanced',
-    title: '06. Advanced SQL',
+    title: '08. Advanced SQL',
     description:
       'Master advanced concepts: views, indexes, transactions, and database design',
     studyContent: `${roadmapData.sections.find((s) => s.id === 'database-design')?.content}\n\n---\n\n${roadmapData.sections.find((s) => s.id === 'advanced-sql')?.content}`,
@@ -833,7 +1371,7 @@ CREATE INDEX idx_transactions_date ON transactions(transaction_date);
       },
       {
         id: 2,
-        title: 'Complex aggregation',
+        title: 'Complex aggregation with view',
         description:
           'Find accounts where total deposits exceed total withdrawals by more than $1000',
         difficulty: 'hard',
@@ -847,7 +1385,7 @@ WHERE (total_deposits - total_withdrawals) > 1000;`,
       },
       {
         id: 3,
-        title: 'Transaction analysis',
+        title: 'Transaction analysis by type',
         description:
           'For each account type, calculate the average balance and total number of transactions',
         difficulty: 'hard',
@@ -859,6 +1397,80 @@ FROM accounts a
 LEFT JOIN transactions t ON a.account_id = t.account_id
 GROUP BY a.account_type;`,
         expectedOutput: 'Statistics by account type',
+      },
+      {
+        id: 4,
+        title: 'BEGIN and COMMIT transaction',
+        description: 'Transfer $500 from ACC001 to ACC002 using a transaction',
+        difficulty: 'hard',
+        hint: 'Use BEGIN, UPDATE both accounts, then COMMIT',
+        solution: `BEGIN TRANSACTION;
+UPDATE accounts SET balance = balance - 500 WHERE account_number = 'ACC001';
+UPDATE accounts SET balance = balance + 500 WHERE account_number = 'ACC002';
+COMMIT;`,
+        expectedOutput: 'Both accounts updated atomically',
+      },
+      {
+        id: 5,
+        title: 'ROLLBACK transaction',
+        description:
+          'Attempt to withdraw $10000 from ACC001, but rollback if balance would go negative',
+        difficulty: 'hard',
+        hint: 'Use BEGIN, check balance, ROLLBACK if insufficient funds',
+        solution: `BEGIN TRANSACTION;
+-- Attempt withdrawal
+UPDATE accounts SET balance = balance - 10000 WHERE account_number = 'ACC001';
+-- Check would violate CHECK constraint, so ROLLBACK
+ROLLBACK;
+-- Alternative: Check first
+SELECT CASE 
+    WHEN balance >= 10000 THEN 'Proceed' 
+    ELSE 'Insufficient funds - ROLLBACK' 
+END AS status 
+FROM accounts WHERE account_number = 'ACC001';`,
+        expectedOutput: 'Transaction rolled back, balance unchanged',
+      },
+      {
+        id: 6,
+        title: 'SAVEPOINT - Partial rollback',
+        description:
+          'Make two deposits, but rollback only the second one using SAVEPOINT',
+        difficulty: 'hard',
+        hint: 'Use BEGIN, UPDATE, SAVEPOINT, UPDATE, ROLLBACK TO savepoint, COMMIT',
+        solution: `BEGIN TRANSACTION;
+-- First deposit
+UPDATE accounts SET balance = balance + 100 WHERE account_number = 'ACC001';
+SAVEPOINT after_first_deposit;
+-- Second deposit (we'll undo this)
+UPDATE accounts SET balance = balance + 200 WHERE account_number = 'ACC001';
+-- Rollback only second deposit
+ROLLBACK TO SAVEPOINT after_first_deposit;
+-- Commit first deposit
+COMMIT;`,
+        expectedOutput: 'First deposit committed, second one rolled back',
+      },
+      {
+        id: 7,
+        title: 'EXPLAIN QUERY PLAN - Index usage',
+        description: 'Check if query uses index when filtering by account_id',
+        difficulty: 'medium',
+        hint: 'Use EXPLAIN QUERY PLAN before your SELECT statement',
+        solution: `EXPLAIN QUERY PLAN
+SELECT * FROM transactions WHERE account_id = 1;`,
+        expectedOutput: 'Shows index scan using idx_transactions_account',
+      },
+      {
+        id: 8,
+        title: 'EXPLAIN QUERY PLAN - Join optimization',
+        description: 'Analyze query plan for accounts-transactions join',
+        difficulty: 'medium',
+        hint: 'Check if indexes are used in JOIN operations',
+        solution: `EXPLAIN QUERY PLAN
+SELECT a.account_number, COUNT(t.transaction_id) AS txn_count
+FROM accounts a
+LEFT JOIN transactions t ON a.account_id = t.account_id
+GROUP BY a.account_id, a.account_number;`,
+        expectedOutput: 'Query plan showing join strategy and index usage',
       },
     ],
   },
