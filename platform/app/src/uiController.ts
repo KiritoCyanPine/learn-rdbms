@@ -136,6 +136,16 @@ export class UIController {
   }
 
   /**
+   * Close off-canvas sidebar after selecting a navigation destination.
+   */
+  private closeSidebarAfterNavigation(): void {
+    const isMobileLayout = window.matchMedia('(max-width: 768px)').matches;
+    if (isMobileLayout || this.sidebar.classList.contains('is-open')) {
+      this.sidebar.classList.remove('is-open');
+    }
+  }
+
+  /**
    * Render navigation from modules
    */
   renderNavigation(modules: Module[]): void {
@@ -181,6 +191,7 @@ export class UIController {
     if (roadmapNavLink) {
       roadmapNavLink.addEventListener('click', (e: Event) => {
         e.preventDefault();
+        this.closeSidebarAfterNavigation();
         this.renderRoadmap();
 
         // Update active state
@@ -188,11 +199,6 @@ export class UIController {
           .querySelectorAll('.nav-link')
           .forEach((l) => l.classList.remove('is-active'));
         roadmapNavLink.classList.add('is-active');
-
-        // Close sidebar on mobile
-        if (window.innerWidth <= 768) {
-          this.sidebar.classList.remove('is-open');
-        }
       });
     }
 
@@ -200,6 +206,7 @@ export class UIController {
     this.sidebarNav.querySelectorAll('[data-module-id]').forEach((link) => {
       link.addEventListener('click', (e: Event) => {
         e.preventDefault();
+        this.closeSidebarAfterNavigation();
         const moduleId = (link as HTMLElement).dataset.moduleId;
         const module = modules.find((m) => m.id === moduleId);
         if (module) {
@@ -210,11 +217,6 @@ export class UIController {
             .querySelectorAll('.nav-link')
             .forEach((l) => l.classList.remove('is-active'));
           link.classList.add('is-active');
-
-          // Close sidebar on mobile
-          if (window.innerWidth <= 768) {
-            this.sidebar.classList.remove('is-open');
-          }
         }
       });
     });
