@@ -48,6 +48,10 @@ module.exports = (env, argv) => {
                     {
                         from: 'node_modules/sql.js/dist/sql-wasm.wasm',
                         to: 'sql-wasm.wasm'
+                    },
+                    {
+                        from: 'node_modules/sql.js/dist/sql-wasm-browser.wasm',
+                        to: 'sql-wasm-browser.wasm'
                     }
                 ]
             })
